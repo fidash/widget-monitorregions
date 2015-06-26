@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta content="charset=utf-8">
+
+    <link rel="stylesheet" type="text/css" href="lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    </head>
+  <body>
+
+
+  <div class="">
+    <div>
+      <select id="level" name="level" class="form-control">
+        <option value="regions" default="true">Regions</option>
+        <option value="vms">Virtual Machines</option>
+      </select>
+    </div>
+
+    <div>
+      <select class="form-control" id="id_region" name="region"><option value="Crete">Crete</option><option value="Volos">Volos</option><option value="Gent">Gent</option><option value="Spain2" default="true">Spain2</option><option value="Poznan">Poznan</option><option value="SophiaAntipolis">SophiaAntipolis</option><option value="Mexico">Mexico</option><option value="Stockholm">Stockholm</option><option value="PiraeusU">PiraeusU</option><option value="Waterford">Waterford</option><option value="Trento">Trento</option><option value="Prague">Prague</option><option value="PiraeusN">PiraeusN</option><option value="Karlskrona">Karlskrona</option><option value="Budapest">Budapest</option><option value="Berlin">Berlin</option><option value="Spain">Spain</option><option value="Zurich">Zurich</option><option value="Prague2">Prague2</option><option value="Karlskrona2">Karlskrona2</option><option value="SaoPaulo">SaoPaulo</option><option value="Budapest2">Budapest2</option><option value="Stockholm2">Stockholm2</option><option value="Lannion2">Lannion2</option><option value="Berlin2">Berlin2</option><option value="Trento2">Trento2</option><option value="Waterford2">Waterford2</option><option value="Lannion">Lannion</option></select>
+    </div>
+  </div>
+
+  <!--Div that will hold the chart-->
+  <div id="chart-div"></div>
+
+
+  <!--Load the AJAX API-->
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script src="lib/js/jquery.min.js"></script>
+  <script src="lib/js/bootstrap.min.js"></script>
+  <script src="lib/js/oauth.js"></script>
+  <script src="js/Monitoring.js"></script>
+  <script src="js/main.js"></script>
+
+  </body>
+</html>
