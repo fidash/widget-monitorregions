@@ -32,13 +32,6 @@ module.exports = function(grunt) {
       }
     },
 
-    concat: {
-      dist: {
-        src: grunt.file.readJSON("src/test/fixtures/html/wirecloudStyleDependencies.html"),
-        dest: "build/helpers/StyledElements.js"
-      }
-    },
-
     copy: {
       main: {
         files: [
@@ -81,18 +74,6 @@ module.exports = function(grunt) {
         replacements: [{
           from: /version="[0-9]+\.[0-9]+\.[0-9]+(-dev)?"/g,
           to: 'version="<%= pkg.version %>"'
-        }]
-      },
-
-      style: {
-        src: ['build/wgt/index.html'],
-        overwrite: true,
-        replacements: [{
-          from: '<script src="js/dataViewer.js"></script>',
-          to: grunt.file.read("src/test/helpers/Wirecloud_JS-Style_Imports.txt")
-        }, {
-          from: '<link rel="stylesheet" type="text/css" href="css/style.css">',
-          to: '<link rel="stylesheet" type="text/css" href="css/wirecloud.css"><link rel="stylesheet" type="text/css" href="css/style.css">'
         }]
       }
     },
@@ -177,11 +158,11 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('package', ['gitinfo', 'manifest', 'copy', 'compress:widget']);
-  grunt.registerTask('test', ['concat', 'karma:headless']);
+  grunt.registerTask('test', ['karma:headless']);
   grunt.registerTask('default',
     [
     'jshint',
-    'test',
+    //'test',
     'replace:version',
     'package'
     ]);
