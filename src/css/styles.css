@@ -1,7 +1,41 @@
+body {
+    min-width: 528px;
+}
+
 .chartContainer {
     display: inline-block;
 }
 
+.form-control {
+    height: 28px;
+    padding: 0px 8px;
+    font-size: 14px;
+}
+
+.btn {
+    line-height: 1;
+    vertical-align: top;
+}
+
+.navbar {
+    padding: 10px;
+}
+
 .hide {
     display: none;
+}
+
+.searcher {
+    display: inline-block;
+    width: 62%;
+}
+
+.search-container {
+    width: 38%
+}
+
+.selects {
+    width: 30%;
+    display: inline-block;
+    float: right;
 }
