@@ -1,4 +1,4 @@
-/* global google,Utils */
+/* global google,Utils,Resizable */
 
 var HostView = (function () {
     "use strict";
@@ -8,8 +8,9 @@ var HostView = (function () {
     /*                        V A R I A B L E S                       */
     /******************************************************************/
 
-    var charts = {
+    var types = {
         "ram": {
+            data: "percRAMUsed",
             options: {
                 slices: {
                     0: {color: 'green'},
@@ -18,6 +19,7 @@ var HostView = (function () {
             }
         },
         "disk": {
+            data: "percDiskUsed",
             options: {
                 slices: {
                     0: {color: 'orange'},
@@ -26,6 +28,7 @@ var HostView = (function () {
             }
         },
         "cpu": {
+            data: "percCPULoad",
             options: {
                 slices: {
                     0: {color: 'brown'},
@@ -34,12 +37,28 @@ var HostView = (function () {
             }
         }
     };
-
+    var charts;
+    var parentResize;
     var defaultOpt = {
         pieHole: 0.4,
         width: window.innerWidth/2.1,
-        height: window.innerHeight/2.3
+        height: (window.innerHeight/2.3) - 27,
+        chartArea:{left:0,top:0,width:"100%",height:"80%"},
+        titlePosition: 'in'
     };
+
+
+
+    /*****************************************************************
+    *                     C O N S T R U C T O R                      *
+    *****************************************************************/
+
+    function HostView () {
+
+        charts = {};
+        parentResize = Object.create(Resizable.prototype).resize;
+
+    }
 
 
     /******************************************************************/
@@ -80,21 +99,16 @@ var HostView = (function () {
 
     }
 
-    function setData (rawData) {
+    function setData (type, rawData) {
+
+        charts[type] = JSON.parse(JSON.stringify(types[type]));
 
         var host = rawData.measures[0].hostName.value;
+        var templateData = types[type].data;
 
-        charts.ram.data = formatData(parseInt(rawData.measures[0].percRAMUsed.value));
-        charts.ram.options.title = "Ram usage for " + host;
-        Utils.mergeOptions(defaultOpt, charts.ram.options);
-
-        charts.disk.data = formatData(parseInt(rawData.measures[0].percDiskUsed.value));
-        charts.disk.options.title = "Disk usage for " + host;
-        Utils.mergeOptions(defaultOpt, charts.disk.options);
-
-        charts.cpu.data = formatData(parseInt(rawData.measures[0].percCPULoad.value));
-        charts.cpu.options.title = "CPU usage for " + host;
-        Utils.mergeOptions(defaultOpt, charts.cpu.options);
+        charts[type].data = formatData(parseInt(rawData.measures[0][templateData].value));
+        charts[type].options.title = type + " usage for " + host;
+        Utils.mergeOptions(defaultOpt, charts[type].options);
 
     }
 
@@ -103,18 +117,24 @@ var HostView = (function () {
     /*                 P U B L I C   F U N C T I O N S                */
     /******************************************************************/
 
-    return {
-        build: function (rawData) {
+    HostView.prototype.build = function (rawData) {
 
-            setData(rawData);
+        setData('ram', rawData);
+        setData('disk', rawData);
+        setData('cpu', rawData);
 
-            drawChart('ram');
-            drawChart('disk');
-            drawChart('cpu');
+        drawChart('ram');
+        drawChart('disk');
+        drawChart('cpu');
 
-        },
-
-        charts: charts
     };
+
+    HostView.prototype.resize = function (newValues) {
+
+        parentResize(charts, newValues);
+
+    };
+
+    return HostView;
 
 })();

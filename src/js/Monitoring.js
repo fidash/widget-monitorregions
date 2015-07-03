@@ -7,10 +7,10 @@ var Monitoring = (function () {
     var OAuth2 = OAuth.OAuth2;
 
     /***  AUTHENTICATION VARIABLES  ***/
-    var ConsumerKey     = "";   // DO NOT COMMIT
-    var ConsumerSecret  = "";   // DO NOT COMMIT
-    var username        = "";   // DO NOT COMMIT
-    var password        = "";   // DO NOT COMMIT
+    var ConsumerKey     = "2703";   // DO NOT COMMIT
+    var ConsumerSecret  = "c67959c060374bfe0e683328d04fe910282fa161d649de5398151cafbeb81357a7454121f2055e10be04106f79c9eba08c6180f5b38b241042dfac552594db66";   // DO NOT COMMIT
+    var username        = "bgrana@conwet.com";   // DO NOT COMMIT
+    var password        = "testPassword42";   // DO NOT COMMIT
     var url             = "http://130.206.84.4:1028/monitoring/regions/";
     var IDMaddress      = "https://account.lab.fiware.org/";
 
@@ -62,7 +62,8 @@ var Monitoring = (function () {
                 'Authorization': 'Bearer ' + bearer
             },
             success: function(data){
-                views[this.view].build(data);
+                this.current = new views[this.view]();
+                this.current.build(data);
             }.bind(this)
         };
 
@@ -123,7 +124,7 @@ var Monitoring = (function () {
             // });
 
             MashupPlatform.widget.context.registerCallback(function (newValues) {
-                Utils.resizeCharts.call(this, views[this.view].charts, newValues);
+                this.current.resize(newValues);
             }.bind(this));
 
         }

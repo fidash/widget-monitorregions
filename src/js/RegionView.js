@@ -1,4 +1,4 @@
-/* global Utils,google */
+/* global Utils,google,Resizable */
 
 var RegionView = (function () {
     "use strict";
@@ -23,9 +23,23 @@ var RegionView = (function () {
 
     var pieChartOptions = {
         pieHole: 0.4,
-        width: window.innerWidth/2.1,
-        height: window.innerHeight/2.3
+        width: window.innerWidth/2,
+        height: (window.innerHeight/2.3) - 27,
+        chartArea:{left:0,top:20,width:"100%",height:"100%"}
     };
+
+    var parentResize;
+
+
+    /*****************************************************************
+    *                     C O N S T R U C T O R                      *
+    *****************************************************************/
+
+    function RegionView () {
+
+        parentResize = Object.create(Resizable.prototype).resize;
+
+    }
 
 
     /******************************************************************/
@@ -130,10 +144,10 @@ var RegionView = (function () {
         }, 2]);
         coreChart.options = {
             title: "Core usage in " + rawData.id,
-            width: window.innerWidth/3,
-            height: window.innerHeight/3,
+            width: window.innerWidth/2,
+            height: (window.innerHeight/2.3) - 27,
             bar: {groupWidth: "50%"},
-            legend: { position: "none" },
+            legend: { position: "none" }
         };
         coreChart.chart = new google.visualization.ColumnChart($("#core-chart")[0]);
         coreChart.chart.draw(coreChart.data, coreChart.options);
@@ -145,19 +159,21 @@ var RegionView = (function () {
     /*                 P U B L I C   F U N C T I O N S                */
     /******************************************************************/
 
-    return {
+    RegionView.prototype.build = function (rawData) {
 
-        build: function (rawData) {
-            
-            drawCoreChart(rawData);
-            drawIpChart(rawData);
-            drawRamChart(rawData);
-            drawDiskChart(rawData);
-
-        },
-
-        charts: charts
+        drawCoreChart(rawData);
+        drawIpChart(rawData);
+        drawRamChart(rawData);
+        drawDiskChart(rawData);
 
     };
+
+    RegionView.prototype.resize = function (newValues) {
+
+        parentResize(charts, newValues);
+
+    };
+
+    return RegionView;
 
 })();
