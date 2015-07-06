@@ -15,10 +15,9 @@
         // Vendor files
         'src/test/vendor/*.js',
         'node_modules/jquery/dist/jquery.js',
-        'node_modules/datatables/media/js/jquery.dataTables.js',
         'node_modules/bootstrap/dist/js/bootstrap.min.js',
-        'src/lib/js/dataTables.fixedHeader.js',
         'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
+        'src/lib/js/oauth.js',
 
         // Helper files
         'src/test/helpers/*.js',
@@ -35,10 +34,11 @@
           included: false },
 
         // Source code
+        'src/js/Resizable.js',
         'src/js/Utils.js',
-        'src/js/Region.js',
-        'src/js/UI.js',
-        'src/js/ListImages.js',
+        'src/js/HostView.js',
+        'src/js/RegionView.js',
+        'src/js/Monitoring.js',
 
         // Spec files
         'src/test/js/*Spec.js'
