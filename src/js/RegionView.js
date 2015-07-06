@@ -166,6 +166,8 @@ var RegionView = (function () {
         drawRamChart(rawData);
         drawDiskChart(rawData);
 
+        parentResize(charts, {'heightInPixels': 1});
+
     };
 
     RegionView.prototype.resize = function (newValues) {

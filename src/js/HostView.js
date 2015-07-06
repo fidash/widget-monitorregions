@@ -127,6 +127,8 @@ var HostView = (function () {
         drawChart('disk');
         drawChart('cpu');
 
+        parentResize(charts, {'heightInPixels': 1});
+
     };
 
     HostView.prototype.resize = function (newValues) {
