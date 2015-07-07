@@ -13,5 +13,5 @@
   <wiring></wiring>
 
   <contents src="index.html" useplatformstyle="true"/>
-  <rendering height="44" width="11"/>
+  <rendering height="38" width="7"/>
 </widget>
