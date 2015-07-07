@@ -1,5 +1,6 @@
 body {
-    min-width: 528px;
+    min-width: 543px;
+    min-height: 382px
 }
 
 .chartContainer {
@@ -12,9 +13,9 @@ body {
     font-size: 14px;
 }
 
-.btn {
-    line-height: 1;
-    vertical-align: top;
+.input-group-addon {
+    width: 26%;
+    padding: 6px 3px;
 }
 
 .navbar {
@@ -25,17 +26,16 @@ body {
     display: none;
 }
 
-.searcher {
-    display: inline-block;
-    width: 62%;
-}
-
-.search-container {
-    width: 38%
+.input-group .form-control {
+    width: 57%;
 }
 
 .selects {
     width: 30%;
     display: inline-block;
     float: right;
+}
+
+.navbar-default {
+    background-color: cadetblue;
 }
