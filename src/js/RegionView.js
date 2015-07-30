@@ -29,11 +29,12 @@ var RegionView = (function () {
     };
 
     var parentResize;
+    var visitedRegions = {};
 
 
-    /*****************************************************************
-    *                     C O N S T R U C T O R                      *
-    *****************************************************************/
+    /****************************************************************/
+    /*                    C O N S T R U C T O R                     */
+    /****************************************************************/
 
     function RegionView () {
 
@@ -45,6 +46,14 @@ var RegionView = (function () {
     /******************************************************************/
     /*                P R I V A T E   F U N C T I O N S               */
     /******************************************************************/
+
+    function getRamOvercommit () {
+        return (1 + Math.random()*0.5).toFixed(2);
+    }
+
+    function getCPUOvercommit () {
+        return (1 + Math.random()*15).toFixed(2);
+    }
 
     function setPieChartData (used, total) {
 
@@ -154,6 +163,27 @@ var RegionView = (function () {
 
     }
 
+    function drawOvercommits (region) {
+
+        var overcommit = region in visitedRegions ? visitedRegions[region] : {ram: getRamOvercommit(), cpu: getCPUOvercommit()};
+        
+        $('<div>')
+            .text('RAM overcommit ratio: ' + overcommit.ram)
+            .css('top', '51px')
+            .css('position', 'absolute')
+            .prependTo('#ram-chart');
+
+        $('<div>')
+            .text('CPU overcommit ratio: ' + overcommit.cpu)
+            .css('position', 'absolute')
+            .prependTo('#core-chart');
+
+        // Increase padding so CPU overcommit is visible
+        $('#core-chart > div').last().css('padding-top', '17px');
+
+        visitedRegions[region] = overcommit;
+    }
+
 
     /******************************************************************/
     /*                 P U B L I C   F U N C T I O N S                */
@@ -165,6 +195,8 @@ var RegionView = (function () {
         drawIpChart(rawData);
         drawRamChart(rawData);
         drawDiskChart(rawData);
+
+        drawOvercommits(rawData.id);
 
         parentResize(charts, {'heightInPixels': 1});
 
