@@ -1,4 +1,4 @@
-#OpenStack Resource Usage Widget
+#Resource Usage Widget
 
 This project is part of [FIWARE](https://www.fiware.org/). This widget is part of FI-Dash component included in FIWARE.
 
