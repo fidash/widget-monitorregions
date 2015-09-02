@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="UPM-ETSIINF" name="resourceusage-widget" version="0.1.3">
+<widget xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="UPM-ETSIINF" name="resourcesusage-widget" version="0.1.3">
   
   <details>
-    <title>Resource Usage</title>
+    <title>Resources Usage</title>
     <email>bgrana@conwet.com</email>
     <image>images/catalogue.png</image>
     <smartphoneimage>images/catalogueSmartphone.png</smartphoneimage>
