@@ -1,16 +1,16 @@
 {
   "name": "ResouceUsage",
-  "homepage": "https://repo.conwet.fi.upm.es/wirecloud/openstack-resourceusage-widget",
+  "homepage": "https://github.com/fidash/widget-resourcesusage",
   "version": "0.1.0",
   "vendor": "CoNWeT",
   "author": "CoNWeT Lab., Universidad Politecnica de Madrid",
   "description": "A widget for monitoring OpenStack regions and virtual machines.",
   "repository": {
     "type": "git",
-    "url": "https://repo.conwet.fi.upm.es/wirecloud/openstack-listimages-widget.git"
+    "url": "https://github.com/fidash/widget-resourcesusage"
   },
   "bugs": {
-    "url": "https://repo.conwet.fi.upm.es/wirecloud/openstack-listimages-widget/issues"
+    "url": "https://github.com/fidash/widget-resourcesusage/issues"
   },
   "keywords": [
     "widget",
