@@ -13,6 +13,7 @@ var Monitoring = (function () {
     var password        = "testPassword42";   // DO NOT COMMIT
     var url             = "http://130.206.84.4:1028/monitoring/regions/";
     var IDMaddress      = "https://account.lab.fiware.org/";
+    var token;
 
     
     var views = {
@@ -27,9 +28,7 @@ var Monitoring = (function () {
 
     function Monitoring () {
 
-        this.token  = "";
         this.view   = $('#view').val();
-        this.region = $('#id_region').val();
         this.hostId = $('#host').val();
 
     }
@@ -45,12 +44,12 @@ var Monitoring = (function () {
 
     function manageCred(e, access_token, refresh_token, results){
 
-        this.token = access_token;
-        getRawData.call(this, access_token);
+        token = access_token;
+        getAvailableRegions.call(this);
 
     }
 
-    function getRawData (token){
+    function getRawData (){
         var bearer = window.btoa(token);
 
         var host = this.view === "host" ? "/vms/" + this.hostId : "";
@@ -69,6 +68,43 @@ var Monitoring = (function () {
 
         $.ajax(options);
 
+    }
+
+    function getAvailableRegions () {
+
+        var bearer = window.btoa(token);
+        
+        var options = {
+            url: url,
+            method:"GET",
+            headers: {
+                'Authorization': 'Bearer ' + bearer
+            },
+            success: function(data){
+                var regions = [];
+
+                data._embedded.regions.forEach(function (region) {
+                    regions.push(region.id);
+                });
+
+                fillRegionSelector(regions.sort());
+                this.region = $("#region_selector").val();
+                getRawData.call(this);
+
+            }.bind(this)
+        };
+
+        $.ajax(options);
+
+    }
+
+    function fillRegionSelector (regions) {
+        regions.forEach(function (region) {
+            $("<option>")
+                .val(region)
+                .text(region)
+                .appendTo($("#region_selector"));
+        });
     }
 
 
@@ -99,28 +135,28 @@ var Monitoring = (function () {
 
                 this.view = newView;
                 this.hostId = $('#host').val();
-                getRawData.call(this, this.token);
+                getRawData.call(this, token);
 
             }.bind(this));
 
             $('#auth').click(authenticate.bind(this));
 
-            $('#id_region').change(function () {
+            $('#region_selector').change(function () {
                 
-                this.region = $('#id_region').val();
-                getRawData.call(this, this.token);
+                this.region = $('#region_selector').val();
+                getRawData.call(this, token);
 
             }.bind(this));
 
             $('#host-button').click(function () {
 
                 this.hostId = $('#host').val();
-                getRawData.call(this, this.token);
+                getRawData.call(this, token);
 
             }.bind(this));
 
             // $('#refresh').click(function () {
-            //     getRawData.call(this, this.token);
+            //     getRawData.call(this, token);
             // });
 
             MashupPlatform.widget.context.registerCallback(function (newValues) {
