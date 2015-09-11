@@ -135,30 +135,19 @@ var RegionView = (function () {
     function drawCoreChart (rawData) {
 
         var coreChart = charts.coreChart;
-        var usedCoresColor = rawData.measures[0].nb_cores < rawData.measures[0].nb_cores_used ? "red" : "silver";
-        var formatedData = [
-            ["Property", "value", {role: "style"}],
-            ["No. Cores", rawData.measures[0].nb_cores, "black"],
-            ["No. Cores enabled", rawData.measures[0].nb_cores_enabled, "yellow"],
-            ["No. Cores used", rawData.measures[0].nb_cores_used, usedCoresColor]
-        ];
-        var data = google.visualization.arrayToDataTable(formatedData);
-        
-        coreChart.data = new google.visualization.DataView(data);
-        coreChart.data.setColumns([0, 1, {
-            calc: "stringify",
-            sourceColumn: 1,
-            type: "string",
-            role: "annotation"
-        }, 2]);
-        coreChart.options = {
-            title: "Core usage",
-            width: window.innerWidth/2,
-            height: (window.innerHeight/2.3) - 27,
-            bar: {groupWidth: "50%"},
-            legend: { position: "none" }
+        var total = parseInt(rawData.measures[0].nb_cores);
+        var used = parseInt(rawData.measures[0].nb_cores_used);
+        var options = {
+            slices: {
+                0: {color: '#009EFF'},
+                1: {color: 'silver'}
+            },
+            title: "Total vCPUs: " + total
         };
-        coreChart.chart = new google.visualization.ColumnChart($("#core-chart")[0]);
+
+        coreChart.data = setPieChartData(used, total, "VCPUs");
+        coreChart.options = Utils.mergeOptions(pieChartOptions, options);
+        coreChart.chart = new google.visualization.PieChart($('#core-chart')[0]);
         coreChart.chart.draw(coreChart.data, coreChart.options);
 
     }
