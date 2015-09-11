@@ -88,7 +88,7 @@ var RegionView = (function () {
                 0: {color: 'orange'},
                 1: {color: 'silver'}
             },
-            title: "Disk usage"
+            title: "Disk Capacity: " + displayableTotal + " TiB"
         };
 
         diskChart.data = setPieChartData(displayableUsed, displayableTotal, "TiB");
@@ -112,7 +112,7 @@ var RegionView = (function () {
                 0: {color: 'green'},
                 1: {color: 'silver'}
             },
-            title: "RAM usage"
+            title: "RAM Capacity: " + displayableTotal + " GiB"
         };
 
         ramChart.data = setPieChartData(displayableUsed, displayableTotal, "GiB");
@@ -132,7 +132,7 @@ var RegionView = (function () {
                 0: {color: 'blue'},
                 1: {color: 'silver'}
             },
-            title: "IP usage"
+            title: "Total IPs: " + total
         };
 
         ipChart.data = setPieChartData(used, total, "IPs");
