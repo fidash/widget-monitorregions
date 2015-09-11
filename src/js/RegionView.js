@@ -55,17 +55,19 @@ var RegionView = (function () {
         return (1 + Math.random()*15).toFixed(2);
     }
 
-    function setPieChartData (used, total) {
+    function setPieChartData (used, total, unit) {
 
         used = used > total ? total : used;
         used = used < 0 ? 0 : used;
+        var free = parseFloat((total-used).toFixed(2));
 
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Used');
         data.addColumn('number', 'Percentage');
+        data.addColumn({type: 'string', role: 'tooltip'});
         data.addRows([
-            ['Used', used],
-            ['Free', total-used]
+            ['Used', used, used + " " + unit + " used"],
+            ['Free', free, free + " " + unit + " free"]
         ]);
 
         return data;
@@ -77,6 +79,10 @@ var RegionView = (function () {
         var diskChart = charts.diskChart;
         var total = parseInt(rawData.measures[0].nb_disk);
         var used = parseInt(rawData.measures[0].percDiskUsed * total);
+
+        var displayableTotal = parseFloat((Math.floor(((total/1024) * 100)) / 100).toFixed(2));
+        var displayableUsed = parseFloat((Math.floor(((used/1024) * 100)) / 100).toFixed(2));
+
         var options = {
             slices: {
                 0: {color: 'orange'},
@@ -85,7 +91,7 @@ var RegionView = (function () {
             title: "Disk usage"
         };
 
-        diskChart.data = setPieChartData(used, total);
+        diskChart.data = setPieChartData(displayableUsed, displayableTotal, "TiB");
         diskChart.options = Utils.mergeOptions(pieChartOptions, options);
         diskChart.chart = new google.visualization.PieChart($('#disk-chart')[0]);
         diskChart.chart.draw(diskChart.data, diskChart.options);
@@ -97,6 +103,10 @@ var RegionView = (function () {
         var ramChart = charts.ramChart;
         var total = parseInt(rawData.measures[0].nb_ram);
         var used = parseInt(rawData.measures[0].percRAMUsed * total);
+
+        var displayableTotal = parseFloat((Math.floor(((total/1024) * 100)) / 100).toFixed(2));
+        var displayableUsed = parseFloat((Math.floor(((used/1024) * 100)) / 100).toFixed(2));
+
         var options = {
             slices: {
                 0: {color: 'green'},
@@ -105,7 +115,7 @@ var RegionView = (function () {
             title: "RAM usage"
         };
 
-        ramChart.data = setPieChartData(used, total);
+        ramChart.data = setPieChartData(displayableUsed, displayableTotal, "GiB");
         ramChart.options = Utils.mergeOptions(pieChartOptions, options);
         ramChart.chart = new google.visualization.PieChart($('#ram-chart')[0]);
         ramChart.chart.draw(ramChart.data, ramChart.options);
@@ -125,7 +135,7 @@ var RegionView = (function () {
             title: "IP usage"
         };
 
-        ipChart.data = setPieChartData(used, total);
+        ipChart.data = setPieChartData(used, total, "IPs");
         ipChart.options = Utils.mergeOptions(pieChartOptions, options);
         ipChart.chart = new google.visualization.PieChart($('#ip-chart')[0]);
         ipChart.chart.draw(ipChart.data, ipChart.options);
