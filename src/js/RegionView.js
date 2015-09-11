@@ -85,7 +85,7 @@ var RegionView = (function () {
 
         var options = {
             slices: {
-                0: {color: 'orange'},
+                0: {color: '#60D868'},
                 1: {color: 'silver'}
             },
             title: "Disk Capacity: " + displayableTotal + " TiB"
@@ -109,7 +109,7 @@ var RegionView = (function () {
 
         var options = {
             slices: {
-                0: {color: 'green'},
+                0: {color: '#C971CC'},
                 1: {color: 'silver'}
             },
             title: "RAM Capacity: " + displayableTotal + " GiB"
@@ -129,7 +129,7 @@ var RegionView = (function () {
         var used = parseInt(rawData.measures[0].ipAllocated);
         var options = {
             slices: {
-                0: {color: 'blue'},
+                0: {color: '#CC9B5E'},
                 1: {color: 'silver'}
             },
             title: "Total IPs: " + total
