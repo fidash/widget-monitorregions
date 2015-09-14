@@ -94,9 +94,9 @@ var RegionView = (function () {
     function drawRamChart (rawData) {
 
         var ramChart = charts.ramChart;
-        var total = parseInt(rawData.measures[0].nb_ram);
+        var overcommit = parseFloat(rawData.measures[0].ram_allocation_ratio);
+        var total = parseInt(rawData.measures[0].nb_ram) * overcommit;
         var used = parseInt(rawData.measures[0].percRAMUsed * total);
-        var overcommit = rawData.measures[0].ram_allocation_ratio;
 
         var displayableTotal = parseFloat((Math.floor(((total/1024) * 100)) / 100).toFixed(2));
         var displayableUsed = parseFloat((Math.floor(((used/1024) * 100)) / 100).toFixed(2));
@@ -139,9 +139,9 @@ var RegionView = (function () {
     function drawCoreChart (rawData) {
 
         var coreChart = charts.coreChart;
-        var total = parseInt(rawData.measures[0].nb_cores);
+        var overcommit = parseFloat(rawData.measures[0].cpu_allocation_ratio);
+        var total = parseInt(rawData.measures[0].nb_cores) * overcommit;
         var used = parseInt(rawData.measures[0].nb_cores_used);
-        var overcommit = rawData.measures[0].cpu_allocation_ratio;
 
         var options = {
             slices: {
