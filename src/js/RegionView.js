@@ -25,7 +25,8 @@ var RegionView = (function () {
         pieHole: 0.4,
         width: window.innerWidth/2,
         height: (window.innerHeight/2.3) - 27,
-        chartArea:{left:0,top:20,width:"100%",height:"100%"}
+        chartArea:{left:0,top:20,width:"100%",height:"100%"},
+        pieSliceBorderColor: "transparent"
     };
 
     var parentResize;
@@ -46,14 +47,6 @@ var RegionView = (function () {
     /******************************************************************/
     /*                P R I V A T E   F U N C T I O N S               */
     /******************************************************************/
-
-    function getRamOvercommit () {
-        return (1 + Math.random()*0.5).toFixed(2);
-    }
-
-    function getCPUOvercommit () {
-        return (1 + Math.random()*15).toFixed(2);
-    }
 
     function setPieChartData (used, total, unit) {
 
@@ -103,6 +96,7 @@ var RegionView = (function () {
         var ramChart = charts.ramChart;
         var total = parseInt(rawData.measures[0].nb_ram);
         var used = parseInt(rawData.measures[0].percRAMUsed * total);
+        var overcommit = rawData.measures[0].ram_allocation_ratio;
 
         var displayableTotal = parseFloat((Math.floor(((total/1024) * 100)) / 100).toFixed(2));
         var displayableUsed = parseFloat((Math.floor(((used/1024) * 100)) / 100).toFixed(2));
@@ -112,7 +106,7 @@ var RegionView = (function () {
                 0: {color: '#C971CC'},
                 1: {color: 'silver'}
             },
-            title: "RAM Capacity: " + displayableTotal + " GiB"
+            title: "RAM Capacity: " + displayableTotal + " GiB, Overcommit: " + overcommit
         };
 
         ramChart.data = setPieChartData(displayableUsed, displayableTotal, "GiB");
@@ -147,12 +141,14 @@ var RegionView = (function () {
         var coreChart = charts.coreChart;
         var total = parseInt(rawData.measures[0].nb_cores);
         var used = parseInt(rawData.measures[0].nb_cores_used);
+        var overcommit = rawData.measures[0].cpu_allocation_ratio;
+
         var options = {
             slices: {
                 0: {color: '#009EFF'},
                 1: {color: 'silver'}
             },
-            title: "Total vCPUs: " + total
+            title: "Total vCPUs: " + total + ", Overcommit: " + overcommit
         };
 
         coreChart.data = setPieChartData(used, total, "VCPUs");
@@ -160,27 +156,6 @@ var RegionView = (function () {
         coreChart.chart = new google.visualization.PieChart($('#core-chart')[0]);
         coreChart.chart.draw(coreChart.data, coreChart.options);
 
-    }
-
-    function drawOvercommits (region) {
-
-        var overcommit = region in visitedRegions ? visitedRegions[region] : {ram: getRamOvercommit(), cpu: getCPUOvercommit()};
-        
-        $('<div>')
-            .text('RAM overcommit ratio: ' + overcommit.ram)
-            .css('top', '51px')
-            .css('position', 'absolute')
-            .prependTo('#ram-chart');
-
-        $('<div>')
-            .text('CPU overcommit ratio: ' + overcommit.cpu)
-            .css('position', 'absolute')
-            .prependTo('#core-chart');
-
-        // Increase padding so CPU overcommit is visible
-        $('#core-chart > div').last().css('padding-top', '17px');
-
-        visitedRegions[region] = overcommit;
     }
 
 
@@ -193,9 +168,7 @@ var RegionView = (function () {
         drawCoreChart(rawData);
         drawIpChart(rawData);
         drawRamChart(rawData);
-        drawDiskChart(rawData);
-
-        drawOvercommits(rawData.id);
+        drawDiskChart(rawData); 
 
         parentResize(charts, {'heightInPixels': 1});
 
