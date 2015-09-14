@@ -13,7 +13,7 @@ var HostView = (function () {
             data: "percRAMUsed",
             options: {
                 slices: {
-                    0: {color: 'green'},
+                    0: {color: '#C971CC'},
                     1: {color: 'silver'}
                 }
             }
@@ -22,7 +22,7 @@ var HostView = (function () {
             data: "percDiskUsed",
             options: {
                 slices: {
-                    0: {color: 'orange'},
+                    0: {color: '#60D868'},
                     1: {color: 'silver'}
                 }
             }
@@ -31,7 +31,7 @@ var HostView = (function () {
             data: "percCPULoad",
             options: {
                 slices: {
-                    0: {color: 'brown'},
+                    0: {color: '#009EFF'},
                     1: {color: 'silver'}
                 }
             }
@@ -43,8 +43,7 @@ var HostView = (function () {
         pieHole: 0.4,
         width: window.innerWidth/2.1,
         height: (window.innerHeight/2.3) - 27,
-        chartArea:{left:0,top:0,width:"100%",height:"80%"},
-        titlePosition: 'in'
+        chartArea:{left:0,top:0,width:"100%",height:"80%"}
     };
 
 
@@ -86,13 +85,15 @@ var HostView = (function () {
 
         used = used > 100 ? 100 : used;
         used = used < 0 ? 0 : used;
+        var free = parseFloat((100-used).toFixed(2));
 
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Used');
         data.addColumn('number', 'Percentage');
+        data.addColumn({type: 'string', role: 'tooltip'});
         data.addRows([
-            ['Used', used],
-            ['Free', 100-used]
+            ['Used', used, used + "% used"],
+            ['Free', 100-used, free + "% free"]
         ]);
 
         return data;
