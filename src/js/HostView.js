@@ -43,7 +43,7 @@ var HostView = (function () {
         pieHole: 0.4,
         width: window.innerWidth/2.1,
         height: (window.innerHeight/2.3) - 27,
-        chartArea:{left:0,top:0,width:"100%",height:"80%"}
+        chartArea:{left:0,top:20,width:"100%",height:"80%"}
     };
 
 
@@ -108,7 +108,7 @@ var HostView = (function () {
         var templateData = types[type].data;
 
         charts[type].data = formatData(parseInt(rawData.measures[0][templateData].value));
-        charts[type].options.title = type + " usage for " + host;
+        charts[type].options.title = type + " usage";
         Utils.mergeOptions(defaultOpt, charts[type].options);
 
     }
