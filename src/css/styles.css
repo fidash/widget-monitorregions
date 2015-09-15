@@ -45,3 +45,20 @@ body {
 .navbar-default {
     background-color: #EEEEEE;
 }
+
+.placeholder-bg {
+    background-color: #EEEEEE;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+}
+
+.host-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+}

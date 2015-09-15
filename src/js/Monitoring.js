@@ -46,6 +46,7 @@ var Monitoring = (function () {
 
         token = access_token;
         getAvailableRegions.call(this);
+        setView.call(this);
 
     }
 
@@ -61,6 +62,7 @@ var Monitoring = (function () {
                 'Authorization': 'Bearer ' + bearer
             },
             success: function(data){
+                setPlaceholder(false);
                 this.current = new views[this.view]();
                 this.current.build(data);
             }.bind(this)
@@ -107,6 +109,62 @@ var Monitoring = (function () {
         });
     }
 
+    function setView () {
+
+        var view = $('#view').val();
+
+
+        if (view !== this.view) {
+            $('#region-view').toggleClass('hide');
+            $('#host-view').toggleClass('hide');
+        }
+
+        this.view = view;
+        this.hostId = $('#host').val();
+
+    }
+
+    function setEvents () {
+
+        $('#view').change(function () {
+            setView.call(this);
+            if (!this.hostId && this.view === "host") {
+                setPlaceholder(true);
+            }
+            else {
+                getRawData.call(this, token);
+            }
+        }.bind(this));
+
+        $('#auth').click(authenticate.bind(this));
+
+        $('#region_selector').change(function () {
+            this.region = $('#region_selector').val();
+            getRawData.call(this, token);
+        }.bind(this));
+
+        $('#host-button').click(function () {
+            this.hostId = $('#host').val();
+            getRawData.call(this, token);
+        }.bind(this));
+
+    }
+
+    function setPlaceholder (show) {
+        
+        var placeholder = $("#host-placeholder");
+        var viewContainer = $("#host-view");
+
+        if (show) {
+            placeholder.removeClass("hide");
+            viewContainer.addClass("placeholder-bg");
+        }
+        else {
+            placeholder.addClass("hide");
+            viewContainer.removeClass("placeholder-bg");
+        }
+    }
+
 
     /******************************************************************/
     /*                 P U B L I C   F U N C T I O N S                */
@@ -124,40 +182,7 @@ var Monitoring = (function () {
 
             google.setOnLoadCallback(authenticate.bind(this, oauth2));
 
-            $('#view').change(function () {
-
-                var newView = $('#view').val();
-
-                if (newView !== this.view) {
-                    $('#region-view').toggleClass('hide');
-                    $('#host-view').toggleClass('hide');
-                }
-
-                this.view = newView;
-                this.hostId = $('#host').val();
-                getRawData.call(this, token);
-
-            }.bind(this));
-
-            $('#auth').click(authenticate.bind(this));
-
-            $('#region_selector').change(function () {
-                
-                this.region = $('#region_selector').val();
-                getRawData.call(this, token);
-
-            }.bind(this));
-
-            $('#host-button').click(function () {
-
-                this.hostId = $('#host').val();
-                getRawData.call(this, token);
-
-            }.bind(this));
-
-            // $('#refresh').click(function () {
-            //     getRawData.call(this, token);
-            // });
+            setEvents.call(this);
 
             MashupPlatform.widget.context.registerCallback(function (newValues) {
                 this.current.resize(newValues);
