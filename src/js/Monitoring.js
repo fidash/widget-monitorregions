@@ -113,6 +113,15 @@ var Monitoring = (function () {
 
         var view = $('#view').val();
 
+        switch (view) {
+            case "host":
+                $(".input-group").removeClass("hide");
+                break;
+            
+            case "region":
+                $(".input-group").addClass("hide");
+                break;
+        }
 
         if (view !== this.view) {
             $('#region-view').toggleClass('hide');
