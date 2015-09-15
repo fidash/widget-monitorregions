@@ -30,6 +30,11 @@ body {
     width: 57%;
 }
 
+.input-group .input-group-addon {
+    background-color: #4078c0;
+    color: white;
+}
+
 .selects {
     width: 30%;
     display: inline-block;
