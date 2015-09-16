@@ -9,18 +9,17 @@
 
 
   <div class="navbar navbar-default">
-    <div class="selects">
-      <select id="view" name="level" class="form-control">
-        <option value="region" default="true">Regions</option>
-        <option value="host">Virtual Machines</option>
-      </select>
-    </div>
+
+    <ul class="nav nav-pills">
+      <li role="presentation" class="active" id="region-pill"><a>Regions</a></li>
+      <li role="presentation" id="host-pill"><a>Virtual Machines</a></li>
+    </ul>
 
     <div class="selects">
       <select class="form-control" id="region_selector" name="region"></select>
     </div>
 
-    <div class="input-group">
+    <div class="input-group pull-right hide">
       <input type="text" id="host" class="form-control searcher" placeholder="Insert a Host ID..." />
       <button id="host-button" class="input-group-addon">Search</button>
     </div>

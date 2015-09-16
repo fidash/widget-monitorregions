@@ -28,7 +28,7 @@ var Monitoring = (function () {
 
     function Monitoring () {
 
-        this.view   = $('#view').val();
+        this.view   = "region";
         this.hostId = $('#host').val();
 
     }
@@ -46,7 +46,7 @@ var Monitoring = (function () {
 
         token = access_token;
         getAvailableRegions.call(this);
-        setView.call(this);
+        setView.call(this, this.view);
 
     }
 
@@ -109,9 +109,7 @@ var Monitoring = (function () {
         });
     }
 
-    function setView () {
-
-        var view = $('#view').val();
+    function setView (view) {
 
         switch (view) {
             case "host":
@@ -135,13 +133,22 @@ var Monitoring = (function () {
 
     function setEvents () {
 
-        $('#view').change(function () {
-            setView.call(this);
-            if (!this.hostId && this.view === "host") {
+        $("#region-pill").click(function (e) {
+            $("#region-pill").addClass("active");
+            $("#host-pill").removeClass("active");
+            setView.call(this, "region");
+            getRawData.call(this);
+        }.bind(this));
+
+        $("#host-pill").click(function (e) {
+            $("#host-pill").addClass("active");
+            $("#region-pill").removeClass("active");
+            setView.call(this, "host");
+            if (!this.hostId) {
                 setPlaceholder(true);
             }
             else {
-                getRawData.call(this, token);
+                getRawData.call(this);
             }
         }.bind(this));
 

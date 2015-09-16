@@ -26,6 +26,10 @@ body {
     display: none;
 }
 
+.input-group {
+    display: inline-block;
+}
+
 .input-group .form-control {
     width: 57%;
 }
@@ -36,7 +40,7 @@ body {
 }
 
 .selects {
-    width: 30%;
+    width: 23%;
     display: inline-block;
     float: right;
     margin-left: 0.5%;
@@ -61,4 +65,17 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 24px;
+}
+
+.nav>li>a {
+    padding: 4px 15px;
+}
+
+.nav.nav-pills {
+    display: inline-block;
+}
+
+.navbar {
+    min-height: none;
+    padding: 10px 10px 5px 10px;
 }
