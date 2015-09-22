@@ -2,13 +2,14 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="lib/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="lib/css/bootstrap-switch.min.css">
     <link rel="stylesheet" type="text/css" href="lib/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
   </head>
   <body>
 
 
-  <div class="navbar navbar-default">
+  <div class="navbar navbar-default" style="z-index: 1000;">
 
     <ul class="nav nav-pills">
       <li role="presentation" class="active" id="region-pill"><a>Regions</a></li>
@@ -16,12 +17,39 @@
     </ul>
 
     <div class="selects">
-      <select class="form-control" id="region_selector" name="region"></select>
+      <select class="form-control" id="region_selector" data-role="none" name="region"></select>
     </div>
 
     <div class="input-group pull-right hide">
       <input type="text" id="host" class="form-control searcher" placeholder="Insert a Host ID..." />
       <button id="host-button" class="input-group-addon">Search</button>
+    </div>
+
+    <div id="switch-region" class="container switch-container">
+      <div class="col-xs-3" style="text-align: center;">
+        <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="RAM" data-off-text="RAM" checked />
+      </div>
+      <div class="col-xs-3" style="text-align: center;">
+        <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="Disk" data-off-text="Disk" checked />
+      </div>
+      <div class="col-xs-3" style="text-align: center;">
+        <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="vCPU" data-off-text="vCPU" checked />
+      </div>
+      <div class="col-xs-3" style="text-align: center;">
+        <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="IP" data-off-text="IP" checked />
+      </div>
+    </div>
+
+    <div id="switch-host" class="container switch-container hide">
+      <div class="col-xs-4" style="text-align: center;">
+        <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="RAM" data-off-text="RAM" checked />
+      </div>
+      <div class="col-xs-4" style="text-align: center;">
+        <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="Disk" data-off-text="Disk" checked />
+      </div>
+      <div class="col-xs-4" style="text-align: center;">
+        <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="CPU" data-off-text="CPU" checked />
+      </div>
     </div>
   </div>
 
@@ -30,7 +58,7 @@
     <!-- Divs that will hold the charts -->
     <div id="ram-chart" class="chartContainer"></div>
     <div id="disk-chart" class="chartContainer"></div>
-    <div id="core-chart" class="chartContainer"></div>
+    <div id="vcpu-chart" class="chartContainer"></div>
     <div id="ip-chart" class="chartContainer"></div>
   </div>
 
@@ -45,6 +73,7 @@
   <!--Load the AJAX API-->
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script src="lib/js/jquery.min.js"></script>
+  <script src="lib/js/bootstrap-switch.min.js"></script>
   <script src="lib/js/bootstrap.min.js"></script>
   <script src="lib/js/oauth.js"></script>
   <script src="js/Utils.js"></script>

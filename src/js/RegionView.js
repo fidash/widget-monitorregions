@@ -15,7 +15,7 @@ var RegionView = (function () {
     };
 
     var charts = {
-        coreChart: {},
+        vcpuChart: {},
         ramChart: {},
         diskChart: {},
         ipChart: {}
@@ -138,7 +138,7 @@ var RegionView = (function () {
 
     function drawCoreChart (rawData) {
 
-        var coreChart = charts.coreChart;
+        var vcpuChart = charts.vcpuChart;
         var overcommit = parseFloat(rawData.measures[0].cpu_allocation_ratio);
         var total = parseInt(rawData.measures[0].nb_cores) * overcommit;
         var used = parseInt(rawData.measures[0].nb_cores_used);
@@ -151,10 +151,10 @@ var RegionView = (function () {
             title: "Total vCPUs: " + total + ", Overcommit: " + overcommit
         };
 
-        coreChart.data = setPieChartData(used, total, "VCPUs");
-        coreChart.options = Utils.mergeOptions(pieChartOptions, options);
-        coreChart.chart = new google.visualization.PieChart($('#core-chart')[0]);
-        coreChart.chart.draw(coreChart.data, coreChart.options);
+        vcpuChart.data = setPieChartData(used, total, "VCPUs");
+        vcpuChart.options = Utils.mergeOptions(pieChartOptions, options);
+        vcpuChart.chart = new google.visualization.PieChart($('#vcpu-chart')[0]);
+        vcpuChart.chart.draw(vcpuChart.data, vcpuChart.options);
 
     }
 

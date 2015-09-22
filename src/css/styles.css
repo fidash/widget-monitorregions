@@ -1,5 +1,5 @@
 body {
-    min-width: 543px;
+    min-width: 635px;
     min-height: 382px
 }
 
@@ -35,7 +35,7 @@ body {
 }
 
 .input-group .input-group-addon {
-    background-color: #4078c0;
+    background-color: #428bca;
     color: white;
 }
 
@@ -51,17 +51,12 @@ body {
 }
 
 .placeholder-bg {
-    background-color: #EEEEEE;
-    top: 50px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    position: absolute;
+    background-color: #A5A5A5;
 }
 
 .host-placeholder {
     position: absolute;
-    top: 50%;
+    top: 56%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 24px;
@@ -78,4 +73,12 @@ body {
 .navbar {
     min-height: none;
     padding: 10px 10px 5px 10px;
+}
+
+.switch-container {
+    padding-top: 4px;
+}
+
+.invisible {
+    visibility: hidden;
 }

@@ -136,6 +136,8 @@ var Monitoring = (function () {
         $("#region-pill").click(function (e) {
             $("#region-pill").addClass("active");
             $("#host-pill").removeClass("active");
+            $("#switch-region").removeClass("hide");
+            $("#switch-host").addClass("hide");
             setView.call(this, "region");
             getRawData.call(this);
         }.bind(this));
@@ -143,6 +145,8 @@ var Monitoring = (function () {
         $("#host-pill").click(function (e) {
             $("#host-pill").addClass("active");
             $("#region-pill").removeClass("active");
+            $("#switch-region").addClass("hide");
+            $("#switch-host").removeClass("hide");
             setView.call(this, "host");
             if (!this.hostId) {
                 setPlaceholder(true);
@@ -164,20 +168,28 @@ var Monitoring = (function () {
             getRawData.call(this, token);
         }.bind(this));
 
+        $("input[type='checkbox']").on("switchChange.bootstrapSwitch", function (e, data) {
+            var type = e.target.dataset.onText;
+            type = type.toLowerCase();
+
+            $("#" + type + "-chart").toggleClass("invisible");
+
+        });
+
     }
 
     function setPlaceholder (show) {
         
         var placeholder = $("#host-placeholder");
-        var viewContainer = $("#host-view");
+        var body = $("body");
 
         if (show) {
             placeholder.removeClass("hide");
-            viewContainer.addClass("placeholder-bg");
+            body.addClass("placeholder-bg");
         }
         else {
             placeholder.addClass("hide");
-            viewContainer.removeClass("placeholder-bg");
+            body.removeClass("placeholder-bg");
         }
     }
 
@@ -199,6 +211,10 @@ var Monitoring = (function () {
             google.setOnLoadCallback(authenticate.bind(this, oauth2));
 
             setEvents.call(this);
+
+            // Initialize widgets
+            $("[name='select-charts-region']").bootstrapSwitch();
+            $("[name='select-charts-host']").bootstrapSwitch();
 
             MashupPlatform.widget.context.registerCallback(function (newValues) {
                 this.current.resize(newValues);
