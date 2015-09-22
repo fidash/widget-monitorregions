@@ -27,13 +27,13 @@
 
     <div id="switch-region" class="container switch-container">
       <div class="col-xs-3" style="text-align: center;">
+        <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="vCPU" data-off-text="vCPU" checked />
+      </div>
+      <div class="col-xs-3" style="text-align: center;">
         <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="RAM" data-off-text="RAM" checked />
       </div>
       <div class="col-xs-3" style="text-align: center;">
         <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="Disk" data-off-text="Disk" checked />
-      </div>
-      <div class="col-xs-3" style="text-align: center;">
-        <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="vCPU" data-off-text="vCPU" checked />
       </div>
       <div class="col-xs-3" style="text-align: center;">
         <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="IP" data-off-text="IP" checked />
@@ -42,13 +42,13 @@
 
     <div id="switch-host" class="container switch-container hide">
       <div class="col-xs-4" style="text-align: center;">
+        <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="CPU" data-off-text="CPU" checked />
+      </div>
+      <div class="col-xs-4" style="text-align: center;">
         <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="RAM" data-off-text="RAM" checked />
       </div>
       <div class="col-xs-4" style="text-align: center;">
         <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="Disk" data-off-text="Disk" checked />
-      </div>
-      <div class="col-xs-4" style="text-align: center;">
-        <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="CPU" data-off-text="CPU" checked />
       </div>
     </div>
   </div>
@@ -56,18 +56,18 @@
 
   <div id="region-view">
     <!-- Divs that will hold the charts -->
+    <div id="vcpu-chart" class="chartContainer"></div>
     <div id="ram-chart" class="chartContainer"></div>
     <div id="disk-chart" class="chartContainer"></div>
-    <div id="vcpu-chart" class="chartContainer"></div>
     <div id="ip-chart" class="chartContainer"></div>
   </div>
 
   <div id="host-view" class="hide">
     <div id="host-placeholder" class="host-placeholder hide">No Host selected</div>
     <!-- Divs that will hold the charts -->
+    <div id="cpu-host" class="chartContainer"></div>
     <div id="ram-host" class="chartContainer"></div>
     <div id="disk-host" class="chartContainer"></div>
-    <div id="cpu-host" class="chartContainer"></div>
   </div>
 
   <!--Load the AJAX API-->
