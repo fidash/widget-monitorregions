@@ -160,6 +160,7 @@ var Monitoring = (function () {
 
         $('#region_selector').change(function () {
             this.region = $('#region_selector').val();
+            this.hostId = $('#host').val();
             getRawData.call(this, token);
         }.bind(this));
 
