@@ -171,9 +171,9 @@ var Monitoring = (function () {
         $("input[type='checkbox']").on("switchChange.bootstrapSwitch", function (e, data) {
             var type = e.target.dataset.onText;
             type = type.toLowerCase();
-
-            $("#" + type + "-chart").toggleClass("invisible");
-
+            var view = $(this).attr("name") === "select-charts-host" ? "host" : "chart";
+            
+            $("#" + type + "-" + view).toggleClass("invisible");
         });
 
     }
