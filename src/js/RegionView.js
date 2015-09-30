@@ -1,4 +1,4 @@
-/* global Utils,google,Resizable,ProgressBar */
+/* global ProgressBar */
 
 var RegionView = (function () {
     "use strict";
@@ -44,7 +44,6 @@ var RegionView = (function () {
             trailColor: "silver",
             trailWidth: 1,
             svgStyle: {
-                display: "inline-block",
                 width: "100%"
             },
             text: {

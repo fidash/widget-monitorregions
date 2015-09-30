@@ -67,9 +67,11 @@
   <div id="host-view" class="hide">
     <div id="host-placeholder" class="host-placeholder hide">No Host selected</div>
     <!-- Divs that will hold the charts -->
-    <div id="cpu-host" class="chartContainer"></div>
-    <div id="ram-host" class="chartContainer"></div>
-    <div id="disk-host" class="chartContainer"></div>
+    <div class="">
+      <div id="cpu-host" class="chartContainer col-xs-4"></div>
+      <div id="ram-host" class="chartContainer col-xs-4"></div>
+      <div id="disk-host" class="chartContainer col-xs-4"></div>
+    </div>
   </div>
 
   <!--Load the AJAX API-->
