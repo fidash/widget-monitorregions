@@ -25,7 +25,7 @@
       <button id="host-button" class="input-group-addon">Search</button>
     </div>
 
-    <div id="switch-region" class="container switch-container">
+    <div id="switch-region" class="container-fluid switch-container">
       <div class="col-xs-3" style="text-align: center;">
         <input type="checkbox" name="select-charts-region" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="vCPU" data-off-text="vCPU" checked />
       </div>
@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <div id="switch-host" class="container switch-container hide">
+    <div id="switch-host" class="container-fluid switch-container hide">
       <div class="col-xs-4" style="text-align: center;">
         <input type="checkbox" name="select-charts-host" data-size="mini" data-handle-width="30" data-label-width="10" data-on-text="CPU" data-off-text="CPU" checked />
       </div>
@@ -54,12 +54,14 @@
   </div>
 
 
-  <div id="region-view">
+  <div id="region-view container-fluid">
     <!-- Divs that will hold the charts -->
-    <div id="vcpu-chart" class="chartContainer"></div>
-    <div id="ram-chart" class="chartContainer"></div>
-    <div id="disk-chart" class="chartContainer"></div>
-    <div id="ip-chart" class="chartContainer"></div>
+    <div class="">
+      <div id="vcpu-chart" class="chartContainer col-xs-3"></div>
+      <div id="ram-chart" class="chartContainer col-xs-3"></div>
+      <div id="disk-chart" class="chartContainer col-xs-3"></div>
+      <div id="ip-chart" class="chartContainer col-xs-3"></div>
+    </div>
   </div>
 
   <div id="host-view" class="hide">
@@ -76,6 +78,7 @@
   <script src="lib/js/bootstrap-switch.min.js"></script>
   <script src="lib/js/bootstrap.min.js"></script>
   <script src="lib/js/oauth.js"></script>
+  <script src="lib/js/progressbar.min.js"></script>
   <script src="js/Utils.js"></script>
   <script src="js/Resizable.js"></script>
   <script src="js/RegionView.js"></script>

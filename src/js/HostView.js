@@ -120,6 +120,9 @@ var HostView = (function () {
 
     HostView.prototype.build = function (rawData) {
 
+        // Empty chart containers
+        $(".chartContainer").empty();
+
         setData('ram', rawData);
         setData('disk', rawData);
         setData('cpu', rawData);

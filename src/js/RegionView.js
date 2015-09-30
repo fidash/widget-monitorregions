@@ -1,4 +1,4 @@
-/* global Utils,google,Resizable */
+/* global Utils,google,Resizable,ProgressBar */
 
 var RegionView = (function () {
     "use strict";
@@ -7,155 +7,63 @@ var RegionView = (function () {
     *                        V A R I A B L E S                       *
     *****************************************************************/
 
-    var chartTypes = {
-        "ip": drawIpChart,
-        "ram": drawRamChart,
-        "core": drawCoreChart,
-        "disk": drawDiskChart
+    var types = {
+        "ip": {
+            color: "#CC9B5E",
+        },
+        "ram": {
+            color: "#C971CC",
+        },
+        "vcpu": {
+            color: "#009EFF",
+        },
+        "disk": {
+            color: "#60D868",
+        }
     };
-
-    var charts = {
-        vcpuChart: {},
-        ramChart: {},
-        diskChart: {},
-        ipChart: {}
-    };
-
-    var pieChartOptions = {
-        pieHole: 0.4,
-        width: window.innerWidth/2,
-        height: (window.innerHeight/2.3) - 27,
-        chartArea:{left:0,top:20,width:"100%",height:"100%"},
-        pieSliceBorderColor: "transparent"
-    };
-
-    var parentResize;
-    var visitedRegions = {};
-
 
     /****************************************************************/
     /*                    C O N S T R U C T O R                     */
     /****************************************************************/
 
-    function RegionView () {
-
-        parentResize = Object.create(Resizable.prototype).resize;
-
-    }
+    function RegionView () {}
 
 
     /******************************************************************/
     /*                P R I V A T E   F U N C T I O N S               */
     /******************************************************************/
 
-    function setPieChartData (used, total, unit) {
-
-        used = used > total ? total : used;
-        used = used < 0 ? 0 : used;
-        var free = parseFloat((total-used).toFixed(2));
-
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Used');
-        data.addColumn('number', 'Percentage');
-        data.addColumn({type: 'string', role: 'tooltip'});
-        data.addRows([
-            ['Used', used, used + " " + unit + " used"],
-            ['Free', free, free + " " + unit + " free"]
-        ]);
-
-        return data;
-
+    function formatData (used, total) {
+         return used/total;
     }
 
-    function drawDiskChart (rawData) {
-
-        var diskChart = charts.diskChart;
-        var total = parseInt(rawData.measures[0].nb_disk);
-        var used = parseInt(rawData.measures[0].percDiskUsed * total);
-
-        var displayableTotal = parseFloat((Math.floor(((total/1024) * 100)) / 100).toFixed(2));
-        var displayableUsed = parseFloat((Math.floor(((used/1024) * 100)) / 100).toFixed(2));
-
-        var options = {
-            slices: {
-                0: {color: '#60D868'},
-                1: {color: 'silver'}
+    function drawChart (type, data) {
+        var progress = new ProgressBar.Circle("#" + type + "-chart", {
+            color: types[type].color,
+            strokeWidth: 5,
+            trailColor: "silver",
+            trailWidth: 1,
+            svgStyle: {
+                display: "inline-block",
+                width: "100%"
             },
-            title: "Disk Capacity: " + displayableTotal + " TiB"
-        };
-
-        diskChart.data = setPieChartData(displayableUsed, displayableTotal, "TiB");
-        diskChart.options = Utils.mergeOptions(pieChartOptions, options);
-        diskChart.chart = new google.visualization.PieChart($('#disk-chart')[0]);
-        diskChart.chart.draw(diskChart.data, diskChart.options);
-
-    }
-
-    function drawRamChart (rawData) {
-
-        var ramChart = charts.ramChart;
-        var overcommit = parseFloat(rawData.measures[0].ram_allocation_ratio);
-        var total = parseInt(rawData.measures[0].nb_ram) * overcommit;
-        var used = parseInt(rawData.measures[0].percRAMUsed * total);
-
-        var displayableTotal = parseFloat((Math.floor(((total/1024) * 100)) / 100).toFixed(2));
-        var displayableUsed = parseFloat((Math.floor(((used/1024) * 100)) / 100).toFixed(2));
-
-        var options = {
-            slices: {
-                0: {color: '#C971CC'},
-                1: {color: 'silver'}
+            text: {
+                value: "0",
+                className: "",
+                style: {
+                    "font-size": "3.5vw",
+                    transform: {
+                        prefix: true,
+                        value: 'translate(-50%, -61%)'
+                    }
+                }
             },
-            title: "RAM Capacity: " + displayableTotal + " GiB, Overcommit: " + overcommit
-        };
+            step: function (state, bar) {
+                bar.setText((bar.value() * 100).toFixed(0) + "%");
+            }
+        });
 
-        ramChart.data = setPieChartData(displayableUsed, displayableTotal, "GiB");
-        ramChart.options = Utils.mergeOptions(pieChartOptions, options);
-        ramChart.chart = new google.visualization.PieChart($('#ram-chart')[0]);
-        ramChart.chart.draw(ramChart.data, ramChart.options);
-
-    }
-
-    function drawIpChart (rawData) {
-
-        var ipChart = charts.ipChart;
-        var total = parseInt(rawData.measures[0].ipTot);
-        var used = parseInt(rawData.measures[0].ipAllocated);
-        var options = {
-            slices: {
-                0: {color: '#CC9B5E'},
-                1: {color: 'silver'}
-            },
-            title: "Total IPs: " + total
-        };
-
-        ipChart.data = setPieChartData(used, total, "IPs");
-        ipChart.options = Utils.mergeOptions(pieChartOptions, options);
-        ipChart.chart = new google.visualization.PieChart($('#ip-chart')[0]);
-        ipChart.chart.draw(ipChart.data, ipChart.options);
-
-    }
-
-    function drawCoreChart (rawData) {
-
-        var vcpuChart = charts.vcpuChart;
-        var overcommit = parseFloat(rawData.measures[0].cpu_allocation_ratio);
-        var total = parseInt(rawData.measures[0].nb_cores) * overcommit;
-        var used = parseInt(rawData.measures[0].nb_cores_used);
-
-        var options = {
-            slices: {
-                0: {color: '#009EFF'},
-                1: {color: 'silver'}
-            },
-            title: "Total vCPUs: " + total + ", Overcommit: " + overcommit
-        };
-
-        vcpuChart.data = setPieChartData(used, total, "VCPUs");
-        vcpuChart.options = Utils.mergeOptions(pieChartOptions, options);
-        vcpuChart.chart = new google.visualization.PieChart($('#vcpu-chart')[0]);
-        vcpuChart.chart.draw(vcpuChart.data, vcpuChart.options);
-
+        progress.animate(data);
     }
 
 
@@ -165,18 +73,19 @@ var RegionView = (function () {
 
     RegionView.prototype.build = function (rawData) {
 
-        drawCoreChart(rawData);
-        drawIpChart(rawData);
-        drawRamChart(rawData);
-        drawDiskChart(rawData); 
+        // Empty chart containers
+        $(".chartContainer").empty();
 
-        parentResize(charts, {'heightInPixels': 1});
+        var measures = rawData.measures[0];
 
-    };
+        var vcpuData = formatData(measures.nb_cores_used, measures.nb_cores * measures.cpu_allocation_ratio);
+        var ipData = formatData(measures.ipAllocated, measures.ipTot);
 
-    RegionView.prototype.resize = function (newValues) {
 
-        parentResize(charts, newValues);
+        drawChart("vcpu", vcpuData);
+        drawChart("ram", measures.percRAMUsed);
+        drawChart("disk", measures.percDiskUsed);
+        drawChart("ip", ipData);
 
     };
 

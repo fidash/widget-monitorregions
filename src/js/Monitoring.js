@@ -149,6 +149,8 @@ var Monitoring = (function () {
             $("#switch-host").removeClass("hide");
             setView.call(this, "host");
             if (!this.hostId) {
+                // Empty chart containers
+                $(".chartContainer").empty();
                 setPlaceholder(true);
             }
             else {
@@ -213,7 +215,7 @@ var Monitoring = (function () {
 
             setEvents.call(this);
 
-            // Initialize widgets
+            // Initialize switchs
             $("[name='select-charts-region']").bootstrapSwitch();
             $("[name='select-charts-host']").bootstrapSwitch();
 
