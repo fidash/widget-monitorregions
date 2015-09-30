@@ -55,7 +55,6 @@ var HostView = (function () {
     function HostView () {
 
         charts = {};
-        parentResize = Object.create(Resizable.prototype).resize;
 
     }
 
@@ -132,12 +131,6 @@ var HostView = (function () {
         drawChart('cpu');
 
         parentResize(charts, {'heightInPixels': 1});
-
-    };
-
-    HostView.prototype.resize = function (newValues) {
-
-        parentResize(charts, newValues);
 
     };
 

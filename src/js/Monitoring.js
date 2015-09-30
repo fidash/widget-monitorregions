@@ -219,10 +219,6 @@ var Monitoring = (function () {
             $("[name='select-charts-region']").bootstrapSwitch();
             $("[name='select-charts-host']").bootstrapSwitch();
 
-            MashupPlatform.widget.context.registerCallback(function (newValues) {
-                this.current.resize(newValues);
-            }.bind(this));
-
         }
 
     };

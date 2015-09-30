@@ -34,8 +34,6 @@
           included: false },
 
         // Source code
-        'src/js/Resizable.js',
-        'src/js/Utils.js',
         'src/js/HostView.js',
         'src/js/RegionView.js',
         'src/js/Monitoring.js',
