@@ -1,4 +1,4 @@
-/* 
+/*
  * @copyright 2014 CoNWeT Lab., Universidad Politécnica de Madrid
  * @license Apache v2 (http://www.apache.org/licenses/)
  */
@@ -44,7 +44,9 @@ module.exports = function(grunt) {
           {expand: true, src: ['css/font-awesome.min.css', 'fonts/*'], dest: 'build/wgt/lib', cwd: 'node_modules/font-awesome'},
           {expand: true, src: ['bootstrap-switch.min.js'], dest: 'build/wgt/lib/js', cwd: 'node_modules/bootstrap-switch/dist/js'},
           {expand: true, src: ['bootstrap-switch.min.css'], dest: 'build/wgt/lib/css', cwd: 'node_modules/bootstrap-switch/dist/css/bootstrap3'},
-          {expand: true, src: ['progressbar.min.js'], dest: 'build/wgt/lib/js', cwd: 'node_modules/progressbar.js/dist'}
+            {expand: true, src: ['progressbar.min.js'], dest: 'build/wgt/lib/js', cwd: 'node_modules/progressbar.js/dist'},
+            {expand: true, src: ['bootstrap-select.min.js', 'i18n/defaults-es_CL.min.js'], dest: 'build/wgt/lib/js', cwd: 'node_modules/bootstrap-select/dist/js'},
+            {expand: true, src: ['bootstrap-select.min.css'], dest: 'build/wgt/lib/css', cwd: 'node_modules/bootstrap-select/dist/css'}
         ]
       }
     },

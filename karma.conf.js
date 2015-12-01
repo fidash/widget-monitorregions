@@ -17,7 +17,6 @@
         'node_modules/jquery/dist/jquery.js',
         'node_modules/bootstrap/dist/js/bootstrap.min.js',
         'node_modules/jasmine-jquery/lib/jasmine-jquery.js',
-        'src/lib/js/oauth.js',
 
         // Helper files
         'src/test/helpers/*.js',

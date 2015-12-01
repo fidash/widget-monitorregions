@@ -1,7 +1,7 @@
 {
   "name": "ResoucesUsage",
   "homepage": "https://github.com/fidash/widget-resourcesusage",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "vendor": "UPM-ETSIINF",
   "author": "CoNWeT Lab., Universidad Politecnica de Madrid",
   "description": "A widget for monitoring OpenStack regions and virtual machines.",
@@ -28,11 +28,11 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.2",
+    "bootstrap-select": "^1.7.5",
     "bootstrap-switch": "^3.3.2",
     "font-awesome": "^4.3.0",
     "http": "0.0.0",
     "jquery": "^2.1.4",
-    "oauth": "^0.9.13",
     "progressbar.js": "^0.9.0"
   },
   "devDependencies": {

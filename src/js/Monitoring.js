@@ -1,21 +1,10 @@
 /* global google,require,RegionView,HostView,Utils */
-
 var Monitoring = (function () {
     "use strict";
 
-    var OAuth = require('oauth');
-    var OAuth2 = OAuth.OAuth2;
-
     /***  AUTHENTICATION VARIABLES  ***/
-    var ConsumerKey     = "2703";   // DO NOT COMMIT
-    var ConsumerSecret  = "c67959c060374bfe0e683328d04fe910282fa161d649de5398151cafbeb81357a7454121f2055e10be04106f79c9eba08c6180f5b38b241042dfac552594db66";   // DO NOT COMMIT
-    var username        = "bgrana@conwet.com";   // DO NOT COMMIT
-    var password        = "testPassword42";   // DO NOT COMMIT
     var url             = "http://130.206.84.4:1028/monitoring/regions/";
-    var IDMaddress      = "https://account.lab.fiware.org/";
-    var token;
 
-    
     var views = {
         'region': RegionView,
         'host': HostView
@@ -27,95 +16,71 @@ var Monitoring = (function () {
     *****************************************************************/
 
     function Monitoring () {
-
         this.view   = "region";
         this.hostId = $('#host').val();
-
+        this.measures_status = {
+            vcpu: true,
+            ram: true,
+            disk: true,
+            ip: true
+        };
     }
 
 
-    /******************************************************************/
-    /*                P R I V A T E   F U N C T I O N S               */
-    /******************************************************************/
+    /******************************************************************
+    *                P R I V A T E   F U N C T I O N S               *
+    ******************************************************************/
 
-    function authenticate (oauth2) {
-        oauth2.getOAuthAccessToken( '', { 'grant_type':'password', 'username': username, 'password': password }, manageCred.bind(this));
+    function drawRegions(regions) {
+        // $("#regionContainer").empty();
+        // diff and only get news, and remove/hide unselected?
+        if (regions.length > this.last_regions.length) {
+            // add
+            diffArrays(regions, this.last_regions)
+                .forEach(drawRegion.bind(this));
+        } else if (regions.length < this.last_regions.length) {
+            // remove
+            diffArrays(this.last_regions, regions)
+                .forEach(removeRegion.bind(this));
+        }
+        // regions.forEach(drawRegion.bind(this));
+        this.last_regions = regions;
     }
 
-    function manageCred(e, access_token, refresh_token, results){
-
-        token = access_token;
-        getAvailableRegions.call(this);
-        setView.call(this, this.view);
-
+    function removeRegion(region) {
+        $("#" + region).remove();
     }
 
-    function getRawData (){
-        var bearer = window.btoa(token);
-
+    function drawRegion(region) {
         var host = this.view === "host" ? "/vms/" + this.hostId : "";
-        
-        var options = {
-            url: url + this.region + host,
-            method:"GET",
-            headers: {
-                'Authorization': 'Bearer ' + bearer
-            },
-            success: function(data){
-                setPlaceholder(false);
-                this.current = new views[this.view]();
-                this.current.build(data);
-            }.bind(this)
-        };
-
-        $.ajax(options);
-
-    }
-
-    function getAvailableRegions () {
-
-        var bearer = window.btoa(token);
-        
-        var options = {
-            url: url,
-            method:"GET",
-            headers: {
-                'Authorization': 'Bearer ' + bearer
-            },
-            success: function(data){
-                var regions = [];
-
-                data._embedded.regions.forEach(function (region) {
-                    regions.push(region.id);
-                });
-
-                fillRegionSelector(regions.sort());
-                this.region = $("#region_selector").val();
-                getRawData.call(this);
-
-            }.bind(this)
-        };
-
-        $.ajax(options);
-
+        getWithAuth(url + region + host, function(data) {
+            // setPlaceholder(false);
+            var view = new views[this.view]();
+            view.build(region, data, this.measures_status);
+        }.bind(this));
     }
 
     function fillRegionSelector (regions) {
+
         regions.forEach(function (region) {
             $("<option>")
                 .val(region)
                 .text(region)
                 .appendTo($("#region_selector"));
         });
+        $("#region_selector")
+            .prop("disabled", false);
+        $("#region_selector").selectpicker({title: "Elige regiones"});
+        $("#region_selector").selectpicker("refresh");
     }
 
     function setView (view) {
 
         switch (view) {
             case "host":
-                $(".input-group").removeClass("hide");
+            $(".input-group").removeClass("hide");
                 break;
-            
+
             case "region":
                 $(".input-group").addClass("hide");
                 break;
@@ -131,71 +96,94 @@ var Monitoring = (function () {
 
     }
 
+    function diffArrays(a, b) {
+        return a.filter(function(i) {return b.indexOf(i) < 0;});
+    }
+
     function setEvents () {
-
-        $("#region-pill").click(function (e) {
-            $("#region-pill").addClass("active");
-            $("#host-pill").removeClass("active");
-            $("#switch-region").removeClass("hide");
-            $("#switch-host").addClass("hide");
-            setView.call(this, "region");
-            getRawData.call(this);
-        }.bind(this));
-
-        $("#host-pill").click(function (e) {
-            $("#host-pill").addClass("active");
-            $("#region-pill").removeClass("active");
-            $("#switch-region").addClass("hide");
-            $("#switch-host").removeClass("hide");
-            setView.call(this, "host");
-            if (!this.hostId) {
-                // Empty chart containers
-                $(".chartContainer").empty();
-                setPlaceholder(true);
-            }
-            else {
-                getRawData.call(this);
-            }
-        }.bind(this));
-
-        $('#auth').click(authenticate.bind(this));
-
         $('#region_selector').change(function () {
-            this.region = $('#region_selector').val();
+            this.regions = $('#region_selector').val() || [];
             this.hostId = $('#host').val();
-            getRawData.call(this, token);
-        }.bind(this));
-
-        $('#host-button').click(function () {
-            this.hostId = $('#host').val();
-            getRawData.call(this, token);
+            this.last_regions = this.last_regions || [];
+            drawRegions.call(this, this.regions);
         }.bind(this));
 
         $("input[type='checkbox']").on("switchChange.bootstrapSwitch", function (e, data) {
             var type = e.target.dataset.onText;
             type = type.toLowerCase();
-            var view = $(this).attr("name") === "select-charts-host" ? "host" : "chart";
-            
-            $("#" + type + "-" + view).toggleClass("invisible");
+
+            var newst = !this.measures_status[type];
+            this.measures_status[type] = newst;
+            if (newst) {
+                // $("." + type).removeClass("hide");
+                $("." + type).removeClass("myhide");
+            } else {
+                // $("." + type).addClass("hide");
+                $("." + type).addClass("myhide");
+            }
+            // $("." + type).toggleClass("hide");
+        }.bind(this));
+    }
+
+    function calcMinHeight() {
+        var minH = 9999;
+        $(".regionChart").forEach(function(v) {
+            if (v.height() < minH) {
+                minH = v.height();
+            }
         });
-
     }
 
-    function setPlaceholder (show) {
-        
-        var placeholder = $("#host-placeholder");
-        var body = $("body");
+    // function setPlaceholder (show) {
 
-        if (show) {
-            placeholder.removeClass("hide");
-            body.addClass("placeholder-bg");
-        }
-        else {
-            placeholder.addClass("hide");
-            body.removeClass("placeholder-bg");
+    //     var placeholder = $("#host-placeholder");
+    //     var body = $("body");
+
+    //     if (show) {
+    //         placeholder.removeClass("hide");
+    //         body.addClass("placeholder-bg");
+    //     }
+    //     else {
+    //         placeholder.addClass("hide");
+    //         body.removeClass("placeholder-bg");
+    //     }
+    // }
+
+    function getWithAuth(url, callback, callbackerror) {
+        if (MashupPlatform.context.get('fiware_token_available')) {
+            MashupPlatform.http.makeRequest("http://130.206.84.4:1028/monitoring/regions/", {
+                method: 'GET',
+                requestHeaders: {
+                    "X-FI-WARE-OAuth-Token": "true",
+                    "X-FI-WARE-OAuth-Header-Name": "X-Auth-Token"
+                },
+                onSuccess: function(response) {
+                    var data = JSON.parse(response.responseText);
+                    callback(data);
+                },
+                onError: function(response) {
+                    var callback = callbackerror || function() {};
+                    callback(response);
+                }
+            });
+        } else {
+            MashupPlatform.widget.log("No fiware token available");
         }
     }
 
+    function getRegionsMonitoring() {
+        getWithAuth("http://130.206.84.4:1028/monitoring/regions/", function(data) {
+            var regions = [];
+
+            data._embedded.regions.forEach(function (region) {
+                regions.push(region.id);
+            });
+
+            fillRegionSelector(regions.sort());
+            this.regions = $("#region_selector").val() || [];
+            // getRawData.call(this);
+        }.bind(this), window.console.log);
+    }
 
     /******************************************************************/
     /*                 P U B L I C   F U N C T I O N S                */
@@ -204,14 +192,10 @@ var Monitoring = (function () {
     Monitoring.prototype = {
 
         init: function () {
-
-            var oauth2 = new OAuth2(ConsumerKey, ConsumerSecret, IDMaddress,  null, 'oauth2/token',  null);
-            oauth2._customHeaders = {Authorization: 'Basic '+ window.btoa(ConsumerKey + ":" + ConsumerSecret)};
-
             // Load the Visualization API and the piechart package.
             google.load("visualization", "1", {packages:["corechart"]});
 
-            google.setOnLoadCallback(authenticate.bind(this, oauth2));
+            google.setOnLoadCallback(getRegionsMonitoring.bind(this));
 
             setEvents.call(this);
 

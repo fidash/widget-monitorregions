@@ -10,13 +10,13 @@ var HostView = (function () {
 
     var types = {
         "ram": {
-            color: "#C971CC",
+            color: "#C971CC"
         },
         "cpu": {
-            color: "#009EFF",
+            color: "#009EFF"
         },
         "disk": {
-            color: "#60D868",
+            color: "#60D868"
         }
     };
 

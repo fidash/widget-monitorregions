@@ -3,9 +3,108 @@ body {
     min-height: 382px
 }
 
-.chartContainer {
-    display: inline-block;
+.regionContainer {
+    margin-right: 5px;
+    margin-left: 5px;
 }
+
+.chartContainer {
+    /* display: inline-block; */
+    min-width: 120px;
+    max-width: 120px;
+    width: 120px;
+}
+
+.measures-container {
+    padding-left: 3px;
+}
+
+.measure {
+    margin-top: -20px;
+    margin-right: 3px;
+
+    -moz-transition: margin-left 0.3s ease 0s, visibility 0.3s cubic-bezier(0.99, -0.6, 0.735, 0.045);
+    -o-transition: margin-left 0.3s ease 0s, visibility 0.3s cubic-bezier(0.99, -0.6, 0.735, 0.045);
+    -webkit-transition: margin-left 0.3s ease 0s, visibility 0.3s cubic-bezier(0.99, -0.6, 0.735, 0.045);
+    -ms-transition: margin-left 0.3s ease 0s, visibility 0.3s cubic-bezier(0.99, -0.6, 0.735, 0.045);
+    transition: margin-left 0.3s ease 0s, visibility 0.3s cubic-bezier(0.99, -0.6, 0.735, 0.045);
+}
+
+.myhide {
+    visibility: hidden;
+    margin-left: -123px;
+
+    -moz-transition: margin-left 0.3s ease 0s;
+    -o-transition: margin-left 0.3s ease 0s;
+    -webkit-transition: margin-left 0.3s ease 0s;
+    -ms-transition: margin-left 0.3s ease 0s;
+    transition: margin-left 0.3s ease 0s;
+}
+
+.regionChart {
+    overflow: hidden;
+    max-width: 505px;           /*chartContainer.width * 4 + 20*/
+    margin: 5px;
+    padding: 5px;
+    background-color: #EEE;
+    -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.2);
+    -moz-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.2);
+    box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.2);
+}
+
+.noselect {
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
+}
+
+.regionTitle {
+    text-align: center;
+    font-weight: bold;
+}
+
+.measureTitle {
+    text-align: center;
+    transform: translate(1%, 277%);
+}
+
+.flexbox {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -webkit-align-content: center;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.flexitem {
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+    -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    -webkit-align-self: auto;
+    -ms-flex-item-align: auto;
+    align-self: auto;
+}
+
+/* .chartContainer p { */
+/*     font-size: 1.5em !important; */
+/* } */
 
 .form-control {
     height: 28px;
