@@ -19,6 +19,10 @@ body {
     padding-left: 3px;
 }
 
+.sort:hover {
+    cursor: pointer;
+}
+
 .measure {
     margin-top: -20px;
     margin-right: 3px;

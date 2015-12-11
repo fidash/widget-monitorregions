@@ -3,7 +3,7 @@ var Monitoring = (function () {
     "use strict";
 
     /***  AUTHENTICATION VARIABLES  ***/
-    var url             = "http://130.206.84.4:1028/monitoring/regions/";
+    var url = "http://130.206.84.4:1028/monitoring/regions/";
 
     var views = {
         'region': RegionView,
@@ -18,6 +18,11 @@ var Monitoring = (function () {
     function Monitoring () {
         this.view   = "region";
         this.hostId = $('#host').val();
+        this.options = {
+            orderby: "",
+            orderinc: "",
+            data: {}
+        };
         this.measures_status = {
             vcpu: true,
             ram: true,
@@ -56,7 +61,9 @@ var Monitoring = (function () {
         getWithAuth(url + region + host, function(data) {
             // setPlaceholder(false);
             var view = new views[this.view]();
-            view.build(region, data, this.measures_status);
+            var rdata = view.build(region, data, this.measures_status);
+            this.options.data[rdata.region] = rdata.data;
+            sortRegions.call(this);
         }.bind(this));
     }
 
@@ -123,6 +130,57 @@ var Monitoring = (function () {
             }
             // $("." + type).toggleClass("hide");
         }.bind(this));
+
+        $(".sort").on("click", function (e, data) {
+            var rawid = "#" + e.target.id;
+            var id = e.target.id.replace(/sort$/, '');
+            var rawmode = e.target.classList[3];
+            var mode = rawmode.replace(/^fa-/, "");
+            var oid = this.options.orderby;
+            var orawid = "#" + oid + "sort";
+            var newmode = "";
+            if (id === oid) {
+                if (mode === "sort") {
+                    newmode = "sort-desc";
+                    $(rawid).removeClass("fa-sort").addClass("fa-sort-desc");
+                } else if (mode === "sort-desc") {
+                    newmode = "sort-asc";
+                    $(rawid).removeClass("fa-sort-desc").addClass("fa-sort-asc");
+                } else {
+                    newmode = "sort-desc";
+                    $(rawid).removeClass("fa-sort-asc").addClass("fa-sort-desc");
+                }
+            } else {
+                newmode = "sort-desc";
+                if (oid !== "") {
+                    var oldclass = $(orawid).attr("class").split(/\s+/)[3];
+                    $(orawid).removeClass(oldclass).addClass("fa-sort");
+                }
+                $(rawid).removeClass(rawmode).addClass("fa-sort-desc");
+            }
+            this.options.orderby = id;
+            this.options.orderinc = newmode;
+            sortRegions.call(this);
+        }.bind(this));
+    }
+
+    function sortRegions() {
+        var by = this.options.orderby;
+        var inc = this.options.orderinc;
+        var data = this.options.data;
+        if (inc === "") {
+            return;
+        }
+        $(".regionChart").sort(function (a, b) {
+            var dataA = data[a.id],
+                dataB = data[b.id];
+            var itemA = dataA[by],
+                itemB = dataB[by];
+            if (inc === "sort-asc") {
+                return itemA > itemB;
+            }
+            return itemB > itemA;
+        }).appendTo("#regionContainer");
     }
 
     function calcMinHeight() {
