@@ -135,7 +135,7 @@ var RegionView = (function () {
 
     function drawChart (region, type, data, show) {
         var id = region + "-" + type;
-        var showC = (show) ? "" : "hide";
+        var showC = (show) ? "" : "myhide";
         $("<div></div>")
             .prop("id", id + "-container")
             .addClass(type + " flexitem measure " + showC)
@@ -178,13 +178,11 @@ var RegionView = (function () {
         progress.animate(data);
     }
 
-
     /******************************************************************/
     /*                 P U B L I C   F U N C T I O N S                */
     /******************************************************************/
 
     RegionView.prototype.build = function (region, rawData, measures_status) {
-
         $("<div></div>")
             .prop("id", region)
             .addClass("flexitem regionChart noselect")
@@ -227,5 +225,4 @@ var RegionView = (function () {
     };
 
     return RegionView;
-
 })();

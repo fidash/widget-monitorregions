@@ -10,7 +10,6 @@ var Monitoring = (function () {
         'host': HostView
     };
 
-
     /*****************************************************************
     *                     C O N S T R U C T O R                      *
     *****************************************************************/
@@ -30,7 +29,6 @@ var Monitoring = (function () {
             ip: true
         };
     }
-
 
     /******************************************************************
     *                P R I V A T E   F U N C T I O N S               *
@@ -68,7 +66,6 @@ var Monitoring = (function () {
     }
 
     function fillRegionSelector (regions) {
-
         regions.forEach(function (region) {
             $("<option>")
                 .val(region)
@@ -82,7 +79,6 @@ var Monitoring = (function () {
     }
 
     function setView (view) {
-
         switch (view) {
             case "host":
             $(".input-group").removeClass("hide");
@@ -100,7 +96,6 @@ var Monitoring = (function () {
 
         this.view = view;
         this.hostId = $('#host').val();
-
     }
 
     function diffArrays(a, b) {
@@ -248,11 +243,9 @@ var Monitoring = (function () {
     /******************************************************************/
 
     Monitoring.prototype = {
-
         init: function () {
             // Load the Visualization API and the piechart package.
             google.load("visualization", "1", {packages:["corechart"]});
-
             google.setOnLoadCallback(getRegionsMonitoring.bind(this));
 
             setEvents.call(this);
@@ -260,9 +253,7 @@ var Monitoring = (function () {
             // Initialize switchs
             $("[name='select-charts-region']").bootstrapSwitch();
             $("[name='select-charts-host']").bootstrapSwitch();
-
         }
-
     };
 
     return Monitoring;

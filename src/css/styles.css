@@ -3,7 +3,7 @@ body {
     min-height: 382px
 }
 
-.regionContainer {
+#regionContainer {
     margin-right: 5px;
     margin-left: 5px;
 }
