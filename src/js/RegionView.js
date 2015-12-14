@@ -1,103 +1,10 @@
-/* global ProgressBar */
+/* global ProgressBar, filesize */
 var RegionView = (function () {
     "use strict";
 
     /*****************************************************************
     *                        V A R I A B L E S                       *
-    *****************************************************************/
-
-    var fakeData = {
-        Budapest2: {
-            vcpu: 0.2,
-            ram: 0.3,
-            disk: 0.4,
-            ip: 0.5
-        },
-        Crete: {
-            vcpu: 0.3,
-            ram: 0.2,
-            disk: 0.5,
-            ip: 0.1
-        },
-        Gent: {
-            vcpu: 0.1,
-            ram: 0.5,
-            disk: 0.2,
-            ip: 0.3
-        },
-        Karlskrona2: {
-            vcpu: 0.8,
-            ram: 0.7,
-            disk: 0.9,
-            ip: 0.78
-        },
-        Lannion2: {
-            vcpu: 0.1,
-            ram: 0.18,
-            disk: 0.09,
-            ip: 0.1
-        },
-        PiraeusN: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        PiraeusU: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        Poznan: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        Prague: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        SaoPaulo: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        SophiaAntipolis: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        Spain2: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        Trento: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        Volos: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        },
-        Zurich: {
-            vcpu: 0,
-            ram: 0,
-            disk: 0,
-            ip: 0
-        }
-    };
+     *****************************************************************/
 
     var types = {
         "ip": {
@@ -130,10 +37,10 @@ var RegionView = (function () {
     /******************************************************************/
 
     function formatData (used, total) {
-         return used/total;
+         return used / total;
     }
 
-    function drawChart (region, type, data, show) {
+    function drawChart (region, type, data, tooltip, show) {
         var id = region + "-" + type;
         var showC = (show) ? "" : "myhide";
         $("<div></div>")
@@ -149,7 +56,9 @@ var RegionView = (function () {
         $("<div></div>")
             .prop("id", id)
             .addClass("chartContainer")
-            .appendTo("#" + id + "-container");
+            .appendTo("#" + id + "-container")
+            .prop("title", tooltip)
+            .tooltipster();
 
         var progress = new ProgressBar.Circle("#" + id, {
             color: types[type].color,
@@ -203,15 +112,34 @@ var RegionView = (function () {
         var ipData = formatData(measures.ipAllocated, measures.ipTot);
 
         /* FAKE DATA */
-        vcpuData = fakeData[region].vcpu;
-        measures.percRAMUsed = fakeData[region].ram;
-        measures.percDiskUsed = fakeData[region].disk;
-        ipData = fakeData[region].ip;
+        // vcpuData = fakeData[region].vcpu;
+        // measures.percRAMUsed = fakeData[region].ram;
+        // measures.percDiskUsed = fakeData[region].disk;
+        // ipData = fakeData[region].ip;
 
-        drawChart(region, "vcpu", vcpuData, measures_status.vcpu);
-        drawChart(region, "ram", measures.percRAMUsed, measures_status.ram);
-        drawChart(region, "disk", measures.percDiskUsed, measures_status.disk);
-        drawChart(region, "ip", ipData, measures_status.ip);
+        drawChart(region,
+                  "vcpu",
+                  vcpuData,
+                  measures.nb_cores_used + " vCores used out of " + (measures.nb_cores * measures.cpu_allocation_ratio),
+                  measures_status.vcpu);
+
+        drawChart(region,
+                  "ram",
+                  measures.percRAMUsed,
+                  filesize(measures.percRAMUsed * measures.nb_ram * 1e6) + " RAM used out of " + filesize(measures.nb_ram * measures.ram_allocation_ratio * 1e6),
+                  measures_status.ram);
+
+        drawChart(region,
+                  "disk",
+                  measures.percDiskUsed,
+                  filesize(measures.percDiskUsed * measures.nb_disk * 1e9) + " Disk used out of " + filesize(measures.nb_disk * 1e9),
+                  measures_status.disk);
+
+        drawChart(region,
+                  "ip",
+                  ipData,
+                  measures.ipAllocated + " IPs allocated out of " + measures.ipTot + " total (" + measures.ipAssigned + " assigned)",
+                  measures_status.ip);
 
         return {
             region: region,

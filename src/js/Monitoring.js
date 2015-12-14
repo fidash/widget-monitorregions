@@ -74,7 +74,7 @@ var Monitoring = (function () {
         });
         $("#region_selector")
             .prop("disabled", false);
-        $("#region_selector").selectpicker({title: "Elige regiones"});
+        $("#region_selector").selectpicker({title: "Choose Region"});
         $("#region_selector").selectpicker("refresh");
     }
 
@@ -204,7 +204,7 @@ var Monitoring = (function () {
 
     function getWithAuth(url, callback, callbackerror) {
         if (MashupPlatform.context.get('fiware_token_available')) {
-            MashupPlatform.http.makeRequest("http://130.206.84.4:1028/monitoring/regions/", {
+            MashupPlatform.http.makeRequest(url, {
                 method: 'GET',
                 requestHeaders: {
                     "X-FI-WARE-OAuth-Token": "true",

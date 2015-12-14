@@ -34,6 +34,10 @@ body {
     transition: margin-left 0.3s ease 0s, visibility 0.3s cubic-bezier(0.99, -0.6, 0.735, 0.045);
 }
 
+.measure:hover {
+    cursor: pointer;
+}
+
 .myhide {
     visibility: hidden;
     margin-left: -123px;
