@@ -107,15 +107,12 @@ var RegionView = (function () {
         // Empty chart containers
         // $(".chartContainer").empty();
 
-        var measures = rawData.measures[0];
-        var vcpuData = formatData(measures.nb_cores_used, measures.nb_cores * measures.cpu_allocation_ratio);
-        var ipData = formatData(measures.ipAllocated, measures.ipTot);
+        var measures = rawData.measures[0] || {};
+        var vcpuData = formatData(measures.nb_cores_used, measures.nb_cores * measures.cpu_allocation_ratio) || 0;
+        var ipData = formatData(measures.ipAllocated, measures.ipTot) || 0;
 
-        /* FAKE DATA */
-        // vcpuData = fakeData[region].vcpu;
-        // measures.percRAMUsed = fakeData[region].ram;
-        // measures.percDiskUsed = fakeData[region].disk;
-        // ipData = fakeData[region].ip;
+        measures.cpu_allocation_ratio = measures.cpu_allocation_ratio || 16;
+        measures.ram_allocation_ratio = measures.ram_allocation_ratio || 1.5;
 
         drawChart(region,
                   "vcpu",

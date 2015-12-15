@@ -172,9 +172,11 @@ var Monitoring = (function () {
             var itemA = dataA[by],
                 itemB = dataB[by];
             if (inc === "sort-asc") {
-                return itemA > itemB;
+                // return itemA > itemB;
+                return parseFloat(itemA) - parseFloat(itemB);
             }
-            return itemB > itemA;
+            return parseFloat(itemB) - parseFloat(itemA);
+            // return itemB > itemA;
         }).appendTo("#regionContainer");
     }
 
