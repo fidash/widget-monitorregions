@@ -80,7 +80,7 @@ var RegionView = (function () {
                 }
             },
             step: function (state, bar) {
-                bar.setText(((bar.value() > 0.0 ? bar.value() : 0.0) * 100).toFixed(0) + "%");
+                bar.setText(((bar.value() > 0.0 ? bar.value() : 0.0) * 100).toFixed(1) + "%");
             }
         });
 
