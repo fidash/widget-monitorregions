@@ -205,6 +205,7 @@ var Monitoring = (function () {
     // }
 
     function getWithAuth(url, callback, callbackerror) {
+        callbackerror = callbackerror || function() {};
         if (MashupPlatform.context.get('fiware_token_available')) {
             MashupPlatform.http.makeRequest(url, {
                 method: 'GET',
@@ -217,8 +218,7 @@ var Monitoring = (function () {
                     callback(data);
                 },
                 onError: function(response) {
-                    var callback = callbackerror || function() {};
-                    callback(response);
+                    callbackerror(response);
                 }
             });
         } else {
@@ -227,7 +227,7 @@ var Monitoring = (function () {
     }
 
     function getRegionsMonitoring() {
-        getWithAuth("http://130.206.84.4:1028/monitoring/regions/", function(data) {
+        getWithAuth(url, function(data) {
             var regions = [];
 
             data._embedded.regions.forEach(function (region) {

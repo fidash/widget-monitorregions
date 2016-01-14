@@ -106,36 +106,41 @@ var RegionView = (function () {
 
         // Empty chart containers
         // $(".chartContainer").empty();
-
         var measures = rawData.measures[0] || {};
-        var vcpuData = formatData(measures.nb_cores_used, measures.nb_cores * measures.cpu_allocation_ratio) || 0;
-        var ipData = formatData(measures.ipAllocated, measures.ipTot) || 0;
 
         measures.cpu_allocation_ratio = measures.cpu_allocation_ratio || 16;
         measures.ram_allocation_ratio = measures.ram_allocation_ratio || 1.5;
 
+        var vcpuData = formatData(measures.nb_cores_used, measures.nb_cores * measures.cpu_allocation_ratio) || 0;
+        var ipData = formatData(measures.ipAllocated, measures.ipTot) || 0;
+
+        var vcpuHoverText = measures.nb_cores_used + " vCores used out of " + (measures.nb_cores * measures.cpu_allocation_ratio) + " (" + measures.cpu_allocation_ratio + " allocation ratio)",
+            ramHoverText = filesize(measures.percRAMUsed * measures.nb_ram * 1e6) + " RAM used out of " + filesize(measures.nb_ram * measures.ram_allocation_ratio * 1e6) + " (" + measures.ram_allocation_ratio + " allocation ratio)",
+            diskHoverText = filesize(measures.percDiskUsed * measures.nb_disk * 1e9) + " Disk used out of " + filesize(measures.nb_disk * 1e9),
+            ipHoverText = measures.ipAllocated + " IPs allocated out of " + measures.ipTot + " total (" + measures.ipAssigned + " assigned)";
+
         drawChart(region,
                   "vcpu",
                   vcpuData,
-                  measures.nb_cores_used + " vCores used out of " + (measures.nb_cores * measures.cpu_allocation_ratio),
+                  vcpuHoverText,
                   measures_status.vcpu);
 
         drawChart(region,
                   "ram",
                   measures.percRAMUsed,
-                  filesize(measures.percRAMUsed * measures.nb_ram * 1e6) + " RAM used out of " + filesize(measures.nb_ram * measures.ram_allocation_ratio * 1e6),
+                  ramHoverText,
                   measures_status.ram);
 
         drawChart(region,
                   "disk",
                   measures.percDiskUsed,
-                  filesize(measures.percDiskUsed * measures.nb_disk * 1e9) + " Disk used out of " + filesize(measures.nb_disk * 1e9),
+                  diskHoverText,
                   measures_status.disk);
 
         drawChart(region,
                   "ip",
                   ipData,
-                  measures.ipAllocated + " IPs allocated out of " + measures.ipTot + " total (" + measures.ipAssigned + " assigned)",
+                  ipHoverText,
                   measures_status.ip);
 
         return {
