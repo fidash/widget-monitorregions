@@ -1,4 +1,4 @@
-/* global google,require,RegionView,HostView,Utils */
+/* global google,require,RegionView,FIDASHRequests */
 var Monitoring = (function () {
     "use strict";
 
@@ -6,8 +6,8 @@ var Monitoring = (function () {
     var url = "http://130.206.84.4:1028/monitoring/regions/";
 
     var views = {
-        'region': RegionView,
-        'host': HostView
+        'region': RegionView
+        // 'host': HostView
     };
 
     /*****************************************************************
@@ -56,7 +56,11 @@ var Monitoring = (function () {
 
     function drawRegion(region) {
         var host = this.view === "host" ? "/vms/" + this.hostId : "";
-        getWithAuth(url + region + host, function(data) {
+        FIDASHRequests.get(url + region + host, function(err, data) {
+            if (err) {
+                window.console.log(err);
+                return;
+            }
             // setPlaceholder(false);
             var view = new views[this.view]();
             var rdata = view.build(region, data, this.measures_status);
@@ -204,30 +208,34 @@ var Monitoring = (function () {
     //     }
     // }
 
-    function getWithAuth(url, callback, callbackerror) {
-        callbackerror = callbackerror || function() {};
-        if (MashupPlatform.context.get('fiware_token_available')) {
-            MashupPlatform.http.makeRequest(url, {
-                method: 'GET',
-                requestHeaders: {
-                    "X-FI-WARE-OAuth-Token": "true",
-                    "X-FI-WARE-OAuth-Header-Name": "X-Auth-Token"
-                },
-                onSuccess: function(response) {
-                    var data = JSON.parse(response.responseText);
-                    callback(data);
-                },
-                onError: function(response) {
-                    callbackerror(response);
-                }
-            });
-        } else {
-            MashupPlatform.widget.log("No fiware token available");
-        }
-    }
+    // function getWithAuth(url, callback, callbackerror) {
+    //     callbackerror = callbackerror || function() {};
+    //     if (MashupPlatform.context.get('fiware_token_available')) {
+    //         MashupPlatform.http.makeRequest(url, {
+    //             method: 'GET',
+    //             requestHeaders: {
+    //                 "X-FI-WARE-OAuth-Token": "true",
+    //                 "X-FI-WARE-OAuth-Header-Name": "X-Auth-Token"
+    //             },
+    //             onSuccess: function(response) {
+    //                 var data = JSON.parse(response.responseText);
+    //                 callback(data);
+    //             },
+    //             onError: function(response) {
+    //                 callbackerror(response);
+    //             }
+    //         });
+    //     } else {
+    //         MashupPlatform.widget.log("No fiware token available");
+    //     }
+    // }
 
     function getRegionsMonitoring() {
-        getWithAuth(url, function(data) {
+        FIDASHRequests.get(url, function(err, data) {
+            if (err) {
+                window.console.log(err);
+                return;
+            }
             var regions = [];
 
             data._embedded.regions.forEach(function (region) {
@@ -237,7 +245,7 @@ var Monitoring = (function () {
             fillRegionSelector(regions.sort());
             this.regions = $("#region_selector").val() || [];
             // getRawData.call(this);
-        }.bind(this), window.console.log);
+        }.bind(this));
     }
 
     /******************************************************************/
