@@ -106,6 +106,25 @@ var Monitoring = (function () {
         return a.filter(function(i) {return b.indexOf(i) < 0;});
     }
 
+    function mergeUnique(a, b) {
+        return a.concat(b.filter(function (item) {
+            return a.indexOf(item) < 0;
+        }));
+    }
+
+    function getAllOptions() {
+        return $('#region_selector option').map(function (x, y) {
+            return $(y).text();
+        }).toArray();
+    }
+
+    function filterNotRegion(regions) {
+        var ops = getAllOptions();
+        return regions.filter(function (i) {
+            return ops.indexOf(i) >= 0;
+        });
+    }
+
     function setEvents () {
         $('#region_selector').change(function () {
             this.regions = $('#region_selector').val() || [];
@@ -252,6 +271,20 @@ var Monitoring = (function () {
     /*                 P U B L I C   F U N C T I O N S                */
     /******************************************************************/
 
+    function receiveRegions(regionsRaw) {
+        var regions = JSON.parse(regionsRaw);
+        // Check it's a list
+        var newRegions = filterNotRegion(regions);
+        // Set in selector
+        $("#region_selector").selectpicker("val", newRegions);
+
+        this.regions = newRegions;
+        this.last_regions = []; // Reset regions! :)
+        // Empty before override
+        $("#regionContainer").empty();
+        drawRegions.call(this, this.regions);
+    }
+
     Monitoring.prototype = {
         init: function () {
             // Load the Visualization API and the piechart package.
@@ -263,6 +296,8 @@ var Monitoring = (function () {
             // Initialize switchs
             $("[name='select-charts-region']").bootstrapSwitch();
             $("[name='select-charts-host']").bootstrapSwitch();
+
+            MashupPlatform.wiring.registerCallback("regions", receiveRegions.bind(this));
         }
     };
 

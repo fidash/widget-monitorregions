@@ -10,7 +10,9 @@
     <authors>bgrana</authors>
   </details>
 
-  <wiring></wiring>
+  <wiring>
+    <inputendpoint name="regions" type="text" label="Regions" description="Receive regions selected" friendcode="regions"/>
+  </wiring>
 
   <contents src="index.html" useplatformstyle="true"/>
   <rendering height="38" width="7"/>
