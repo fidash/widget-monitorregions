@@ -14,6 +14,17 @@
     <inputendpoint name="regions" type="text" label="Regions" description="Receive regions selected" friendcode="regions"/>
   </wiring>
 
+  <persistentvariables>
+    <variable name="regionSelected" type="text" label="Regions Selected" description="" />
+    <variable name="vcpuOn" type="text" label="CPU ON" description="" />
+    <variable name="ramOn" type="text" label="RAM ON" description="" />
+    <variable name="diskOn" type="text" label="Disk ON" description="" />
+    <variable name="ipOn" type="text" label="IP ON" description="" />
+
+    <variable name="sort" type="text" label="Type of sorting" description="" />
+  </persistentvariables>
+
+
   <contents src="index.html" useplatformstyle="true"/>
   <rendering height="38" width="7"/>
 </widget>

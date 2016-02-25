@@ -5,9 +5,54 @@ var Monitoring = (function () {
     /***  AUTHENTICATION VARIABLES  ***/
     var url = "http://130.206.84.4:1028/monitoring/regions/";
 
-    var views = {
-        'region': RegionView
-        // 'host': HostView
+    var createDefaultRegion = function createDefaultRegion(region) {
+        var randomN = function randomN() {
+            return (Math.random() * 100).toString();
+        };
+
+        var IPsTot = Math.floor(Math.random() * 100);
+        var IPsAll = Math.floor(Math.random() * IPsTot);
+        var IPsAss = Math.floor(Math.random() * IPsAll);
+
+        return {
+            "_links": {
+                "self": { "href": "/monitoring/regions/" + region },
+                "hosts": { "href": "/monitoring/regions/" + region + "/hosts" }
+            },
+            "id": region,
+            "name": region,
+            "country": "None",
+            "latitude": "xyz",
+            "longitude": "xyz",
+            "measures": [
+                {
+                    "timestamp" : "2013-12-20T12.00",
+                    "ipAssigned": IPsAss.toString(),
+                    "ipAllocated": IPsAll.toString(),
+                    "ipTot": IPsTot.toString(),
+                    "nb_cores": "100",
+                    "nb_cores_enabled": "100",
+                    "nb_ram": "1000",
+                    "nb_disk": "10000",
+                    "nb_vm": "100000",
+                    "power_consumption": "123",
+                    "percCPULoad": {
+                        "value": randomN(),
+                        "description": "avarage of the percCPULoad for all the hosts"
+                    },
+                    "percRAMUsed": {
+                        "value": randomN(),
+                        "description": "avarage of the percCPULoad for all the hosts"
+                    },
+                    "percDiskUsed": {
+                        "value": randomN(),
+                        "description": "avarage of the percCPULoad for all the hosts"
+                    },
+                    "ram_allocation_ratio": "1.5",
+                    "cpu_allocation_ratio": "16.0"
+                }
+            ]
+        };
     };
 
     /*****************************************************************
@@ -15,19 +60,39 @@ var Monitoring = (function () {
     *****************************************************************/
 
     function Monitoring () {
-        this.view   = "region";
+        this.regions = [];
+
         this.hostId = $('#host').val();
         this.options = {
             orderby: "",
             orderinc: "",
             data: {}
         };
+
         this.measures_status = {
             vcpu: true,
             ram: true,
             disk: true,
             ip: true
         };
+
+        this.minvalues = {
+            vcpu: 0,
+            ram: 0,
+            disk: 0,
+            ip: 0
+        };
+
+        this.variables = {
+            regionSelected: MashupPlatform.widget.getVariable("regionSelected"),
+            vcpuOn: MashupPlatform.widget.getVariable("vcpuOn"),
+            ramOn: MashupPlatform.widget.getVariable("ramOn"),
+            diskOn: MashupPlatform.widget.getVariable("diskOn"),
+            ipOn: MashupPlatform.widget.getVariable("ipOn"),
+            sort: MashupPlatform.widget.getVariable("sort")
+        };
+
+        handleVariables.call(this);
     }
 
     /******************************************************************
@@ -47,6 +112,7 @@ var Monitoring = (function () {
                 .forEach(removeRegion.bind(this));
         }
         // regions.forEach(drawRegion.bind(this));
+        this.variables.regionSelected.set(regions.join(","));
         this.last_regions = regions;
     }
 
@@ -55,15 +121,16 @@ var Monitoring = (function () {
     }
 
     function drawRegion(region) {
-        var host = this.view === "host" ? "/vms/" + this.hostId : "";
-        FIDASHRequests.get(url + region + host, function(err, data) {
+        FIDASHRequests.get(url + region, function(err, data) {
             if (err) {
                 window.console.log(err);
+                // The API seems down
+                var rdata2 = new RegionView().build(region, createDefaultRegion(region), this.measures_status);
+                this.options.data[rdata2.region] = rdata2.data;
+                sortRegions.call(this);
                 return;
             }
-            // setPlaceholder(false);
-            var view = new views[this.view]();
-            var rdata = view.build(region, data, this.measures_status);
+            var rdata = new RegionView().build(region, data, this.measures_status);
             this.options.data[rdata.region] = rdata.data;
             sortRegions.call(this);
         }.bind(this));
@@ -80,26 +147,6 @@ var Monitoring = (function () {
             .prop("disabled", false);
         $("#region_selector").selectpicker({title: "Choose Region"});
         $("#region_selector").selectpicker("refresh");
-    }
-
-    function setView (view) {
-        switch (view) {
-            case "host":
-            $(".input-group").removeClass("hide");
-                break;
-
-            case "region":
-                $(".input-group").addClass("hide");
-                break;
-        }
-
-        if (view !== this.view) {
-            $('#region-view').toggleClass('hide');
-            $('#host-view').toggleClass('hide');
-        }
-
-        this.view = view;
-        this.hostId = $('#host').val();
     }
 
     function diffArrays(a, b) {
@@ -139,6 +186,7 @@ var Monitoring = (function () {
 
             var newst = !this.measures_status[type];
             this.measures_status[type] = newst;
+            this.variables[type+"On"].set(newst.toString());
             if (newst) {
                 // $("." + type).removeClass("hide");
                 $("." + type).removeClass("myhide");
@@ -178,6 +226,7 @@ var Monitoring = (function () {
             }
             this.options.orderby = id;
             this.options.orderinc = newmode;
+            this.variables.sort.set(id + "//" + newmode);
             sortRegions.call(this);
         }.bind(this));
     }
@@ -192,6 +241,9 @@ var Monitoring = (function () {
         $(".regionChart").sort(function (a, b) {
             var dataA = data[a.id],
                 dataB = data[b.id];
+            if (!dataA || !dataB) {
+                return 0;
+            }
             var itemA = dataA[by],
                 itemB = dataB[by];
             if (inc === "sort-asc") {
@@ -212,47 +264,14 @@ var Monitoring = (function () {
         });
     }
 
-    // function setPlaceholder (show) {
-
-    //     var placeholder = $("#host-placeholder");
-    //     var body = $("body");
-
-    //     if (show) {
-    //         placeholder.removeClass("hide");
-    //         body.addClass("placeholder-bg");
-    //     }
-    //     else {
-    //         placeholder.addClass("hide");
-    //         body.removeClass("placeholder-bg");
-    //     }
-    // }
-
-    // function getWithAuth(url, callback, callbackerror) {
-    //     callbackerror = callbackerror || function() {};
-    //     if (MashupPlatform.context.get('fiware_token_available')) {
-    //         MashupPlatform.http.makeRequest(url, {
-    //             method: 'GET',
-    //             requestHeaders: {
-    //                 "X-FI-WARE-OAuth-Token": "true",
-    //                 "X-FI-WARE-OAuth-Header-Name": "X-Auth-Token"
-    //             },
-    //             onSuccess: function(response) {
-    //                 var data = JSON.parse(response.responseText);
-    //                 callback(data);
-    //             },
-    //             onError: function(response) {
-    //                 callbackerror(response);
-    //             }
-    //         });
-    //     } else {
-    //         MashupPlatform.widget.log("No fiware token available");
-    //     }
-    // }
-
     function getRegionsMonitoring() {
         FIDASHRequests.get(url, function(err, data) {
             if (err) {
                 window.console.log(err);
+                // The API are down
+                fillRegionSelector(["Spain2", "Trento", "Berlin2"].sort());
+                selectSavedRegions.call(this);
+                this.regions = $("#region_selector").val() || [];
                 return;
             }
             var regions = [];
@@ -262,14 +281,10 @@ var Monitoring = (function () {
             });
 
             fillRegionSelector(regions.sort());
+            selectSavedRegions.call(this);
             this.regions = $("#region_selector").val() || [];
-            // getRawData.call(this);
         }.bind(this));
     }
-
-    /******************************************************************/
-    /*                 P U B L I C   F U N C T I O N S                */
-    /******************************************************************/
 
     function receiveRegions(regionsRaw) {
         var regions = JSON.parse(regionsRaw);
@@ -285,17 +300,52 @@ var Monitoring = (function () {
         drawRegions.call(this, this.regions);
     }
 
+    function handleSwitchVariable(name) {
+        if (this.variables[name + "On"].get() === "") {
+            this.variables[name + "On"].set("true");
+        } else if (this.variables[name + "On"].get() !== "true") {
+            this.measures_status[name] = false;
+            $("." + name).addClass("myhide");
+            $("#" + name + "Switch input[name='select-charts-region']").bootstrapSwitch("state", false, true);
+        }
+    }
+
+    function selectSavedRegions() {
+        // Get regions
+        var regionsS = this.variables.regionSelected.get();
+        var regions = regionsS.split(",");
+        receiveRegions.call(this, JSON.stringify(regions));
+    }
+
+    function handleVariables(arg) {
+        handleSwitchVariable.call(this, "vcpu");
+        handleSwitchVariable.call(this, "ram");
+        handleSwitchVariable.call(this, "disk");
+        handleSwitchVariable.call(this, "ip");
+
+        var sort = this.variables.sort.get();
+        var matchS = sort.match(/^(.+)\/\/(.+)$/);
+        if (sort && matchS) {
+            $("#" + matchS[1] + "sort").addClass("fa-" + matchS[2]);
+            this.options.orderby = matchS[1];
+            this.options.orderinc = matchS[2];
+            sortRegions.call(this);
+        }
+    }
+
+    /******************************************************************/
+    /*                 P U B L I C   F U N C T I O N S                */
+    /******************************************************************/
+
+
     Monitoring.prototype = {
         init: function () {
-            // Load the Visualization API and the piechart package.
-            google.load("visualization", "1", {packages:["corechart"]});
-            google.setOnLoadCallback(getRegionsMonitoring.bind(this));
+            getRegionsMonitoring.call(this);
 
             setEvents.call(this);
 
             // Initialize switchs
             $("[name='select-charts-region']").bootstrapSwitch();
-            $("[name='select-charts-host']").bootstrapSwitch();
 
             MashupPlatform.wiring.registerCallback("regions", receiveRegions.bind(this));
         }
