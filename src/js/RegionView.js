@@ -7,21 +7,21 @@ var RegionView = (function () {
      *****************************************************************/
 
     var types = {
-        "ip": {
-            color: "#CC9B5E",
-            name: "IP"
+        "vcpu": {
+            color: "#009EFF",
+            name: "vCPU"
         },
         "ram": {
             color: "#C971CC",
             name: "RAM"
         },
-        "vcpu": {
-            color: "#009EFF",
-            name: "vCPU"
-        },
         "disk": {
             color: "#60D868",
             name: "Disk"
+        },
+        "ip": {
+            color: "#CC9B5E",
+            name: "IP"
         }
     };
 

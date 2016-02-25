@@ -189,3 +189,23 @@ body {
 .invisible {
     visibility: hidden;
 }
+
+#vcpuSwitch .bootstrap-switch-handle-on {
+  background-color: #009EFF;
+}
+
+#ramSwitch .bootstrap-switch-handle-on {
+  background-color: #C971CC;
+}
+
+#diskSwitch .bootstrap-switch-handle-on {
+  background-color: #60D868;
+}
+
+#ipSwitch .bootstrap-switch-handle-on {
+  background-color: #CC9B5E;
+}
+
+.bootstrap-switch-handle-off {
+  background-color: #ddd;
+}
