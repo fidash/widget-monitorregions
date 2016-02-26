@@ -31,23 +31,14 @@ var Monitoring = (function () {
                     "ipAllocated": IPsAll.toString(),
                     "ipTot": IPsTot.toString(),
                     "nb_cores": "100",
-                    "nb_cores_enabled": "100",
-                    "nb_ram": "1000",
-                    "nb_disk": "10000",
-                    "nb_vm": "100000",
+                    "nb_cores_used": "80",
+                    "nb_ram": "100000",
+                    "nb_disk": "1000000",
+                    "nb_vm": "10000000",
                     "power_consumption": "123",
-                    "percCPULoad": {
-                        "value": randomN(),
-                        "description": "avarage of the percCPULoad for all the hosts"
-                    },
-                    "percRAMUsed": {
-                        "value": randomN(),
-                        "description": "avarage of the percCPULoad for all the hosts"
-                    },
-                    "percDiskUsed": {
-                        "value": randomN(),
-                        "description": "avarage of the percCPULoad for all the hosts"
-                    },
+                    "percCPULoad": randomN(),
+                    "percRAMUsed": randomN() / 100,
+                    "percDiskUsed": randomN() / 100,
                     "ram_allocation_ratio": "1.5",
                     "cpu_allocation_ratio": "16.0"
                 }
