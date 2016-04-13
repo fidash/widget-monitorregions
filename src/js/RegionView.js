@@ -91,10 +91,12 @@ var RegionView = (function () {
     /*                 P U B L I C   F U N C T I O N S                */
     /******************************************************************/
 
-    RegionView.prototype.build = function (region, rawData, measures_status) {
+    RegionView.prototype.build = function (region, rawData, measures_status, filtertext) {
+        var hideFilter = filtertext !== "" && region.toLowerCase().indexOf(filtertext) < 0 ? "filterhide" : "";
+
         $("<div></div>")
             .prop("id", region)
-            .addClass("flexitem regionChart noselect")
+            .addClass("flexitem regionChart noselect" + " " + hideFilter)
             .appendTo("#regionContainer");
         $("<div>" + region + "</div>")
             .addClass("regionTitle")
