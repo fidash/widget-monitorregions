@@ -205,9 +205,11 @@ var Monitoring = (function () {
             if (closing) {
                 $(".navbar").collapse("hide");
                 $(".slidecontainer").removeClass("open").addClass("closed");
+                $("#regionContainer").css("margin-top", "6px");
             } else {
                 $(".navbar").collapse("show");
                 $(".slidecontainer").removeClass("closed").addClass("open");
+                $("#regionContainer").css("margin-top", "93px");
             }
 
             return false;
@@ -371,9 +373,11 @@ var Monitoring = (function () {
         if (this.variables.closed.get() === "true") {
             $(".navbar").collapse("hide");
             $(".slidecontainer").removeClass("open").addClass("closed");
+            $("#regionContainer").css("margin-top", "6px");
         } else {
             $(".navbar").collapse("show");
             $(".slidecontainer").removeClass("closed").addClass("open");
+            $("#regionContainer").css("margin-top", "93px");
         }
 
         var sort = this.variables.sort.get();
