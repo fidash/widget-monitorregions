@@ -1,37 +1,97 @@
+/*global $, MashupPlatform */
+
 /* global google,require,RegionView,FIDASHRequests */
 var Monitoring = (function () {
     "use strict";
 
     /***  AUTHENTICATION VARIABLES  ***/
-    var url = "http://130.206.84.4:1028/monitoring/regions/";
+    var url = "http://130.206.84.4:11027/monitoring/regions/";
 
-    var views = {
-        'region': RegionView
-        // 'host': HostView
+    var createDefaultRegion = function createDefaultRegion(region) {
+        var randomN = function randomN() {
+            return (Math.random() * 100).toString();
+        };
+
+        var IPsTot = Math.floor(Math.random() * 100);
+        var IPsAll = Math.floor(Math.random() * IPsTot);
+        var IPsAss = Math.floor(Math.random() * IPsAll);
+
+        return {
+            _links: {
+                self: { href: "/monitoring/regions/" + region },
+                hosts: { href: "/monitoring/regions/" + region + "/hosts" }
+            },
+            id: region,
+            name: region,
+            country: "None",
+            latitude: "xyz",
+            longitude: "xyz",
+            measures: [
+                {
+                    timestamp: "2013-12-20T12.00",
+                    ipAssigned: IPsAss.toString(),
+                    ipAllocated: IPsAll.toString(),
+                    ipTot: IPsTot.toString(),
+                    nb_cores: "100",
+                    nb_cores_used: "80",
+                    nb_ram: "100000",
+                    nb_disk: "1000000",
+                    nb_vm: "10000000",
+                    power_consumption: "123",
+                    percCPULoad: randomN(),
+                    percRAMUsed: randomN() / 100,
+                    percDiskUsed: randomN() / 100,
+                    ram_allocation_ratio: "1.5",
+                    cpu_allocation_ratio: "16.0"
+                }
+            ]
+        };
     };
 
     /*****************************************************************
     *                     C O N S T R U C T O R                      *
     *****************************************************************/
 
-    function Monitoring () {
-        this.view   = "region";
-        this.hostId = $('#host').val();
+    function Monitoring() {
+        this.regions = [];
+        this.filtertext = "";
+
+        this.hostId = $("#host").val();
         this.options = {
             orderby: "",
             orderinc: "",
             data: {}
         };
+
         this.measures_status = {
             vcpu: true,
             ram: true,
             disk: true,
             ip: true
         };
+
+        this.minvalues = {
+            vcpu: 0,
+            ram: 0,
+            disk: 0,
+            ip: 0
+        };
+
+        this.variables = {
+            regionSelected: MashupPlatform.widget.getVariable("regionSelected"),
+            vcpuOn: MashupPlatform.widget.getVariable("vcpuOn"),
+            ramOn: MashupPlatform.widget.getVariable("ramOn"),
+            diskOn: MashupPlatform.widget.getVariable("diskOn"),
+            ipOn: MashupPlatform.widget.getVariable("ipOn"),
+            sort: MashupPlatform.widget.getVariable("sort"),
+            closed: MashupPlatform.widget.getVariable("closed")
+        };
+
+        // handleVariables.call(this);
     }
 
     /******************************************************************
-    *                P R I V A T E   F U N C T I O N S               *
+     *                P R I V A T E   F U N C T I O N S               *
     ******************************************************************/
 
     function drawRegions(regions) {
@@ -46,7 +106,9 @@ var Monitoring = (function () {
             diffArrays(this.last_regions, regions)
                 .forEach(removeRegion.bind(this));
         }
+
         // regions.forEach(drawRegion.bind(this));
+        this.variables.regionSelected.set(regions.join(","));
         this.last_regions = regions;
     }
 
@@ -55,63 +117,102 @@ var Monitoring = (function () {
     }
 
     function drawRegion(region) {
-        var host = this.view === "host" ? "/vms/" + this.hostId : "";
-        FIDASHRequests.get(url + region + host, function(err, data) {
+        FIDASHRequests.get(url + region, function (err, data) {
             if (err) {
                 window.console.log(err);
+                MashupPlatform.widget.log("The API seems down (Asking for region " + region + "): " + err.statusText);
+
+                // The API seems down
+                // var rdata2 = new RegionView().build(region, createDefaultRegion(region), this.measures_status, this.filtertext);
+                // this.options.data[rdata2.region] = rdata2.data;
+                // sortRegions.call(this);
                 return;
             }
-            // setPlaceholder(false);
-            var view = new views[this.view]();
-            var rdata = view.build(region, data, this.measures_status);
+
+            var rdata = new RegionView().build(region, data, this.measures_status, this.filtertext);
             this.options.data[rdata.region] = rdata.data;
             sortRegions.call(this);
         }.bind(this));
     }
 
-    function fillRegionSelector (regions) {
+    function fillRegionSelector(regions) {
         regions.forEach(function (region) {
             $("<option>")
                 .val(region)
                 .text(region)
                 .appendTo($("#region_selector"));
         });
+
         $("#region_selector")
             .prop("disabled", false);
-        $("#region_selector").selectpicker({title: "Choose Region"});
+        $("#region_selector").selectpicker({ title: "Choose Region" });
         $("#region_selector").selectpicker("refresh");
     }
 
-    function setView (view) {
-        switch (view) {
-            case "host":
-            $(".input-group").removeClass("hide");
-                break;
-
-            case "region":
-                $(".input-group").addClass("hide");
-                break;
-        }
-
-        if (view !== this.view) {
-            $('#region-view').toggleClass('hide');
-            $('#host-view').toggleClass('hide');
-        }
-
-        this.view = view;
-        this.hostId = $('#host').val();
-    }
-
     function diffArrays(a, b) {
-        return a.filter(function(i) {return b.indexOf(i) < 0;});
+        return a.filter(function (i) {return b.indexOf(i) < 0;});
     }
 
-    function setEvents () {
-        $('#region_selector').change(function () {
-            this.regions = $('#region_selector').val() || [];
-            this.hostId = $('#host').val();
+    function mergeUnique(a, b) {
+        return a.concat(b.filter(function (item) {
+            return a.indexOf(item) < 0;
+        }));
+    }
+
+    function getAllOptions() {
+        return $("#region_selector option").map(function (x, y) {
+            return $(y).text();
+        }).toArray();
+    }
+
+    function filterNotRegion(regions) {
+        var ops = getAllOptions();
+        return regions.filter(function (i) {
+            return ops.indexOf(i) >= 0;
+        });
+    }
+
+    function setEvents() {
+        $("#region_selector").change(function () {
+            this.regions = $("#region_selector").val() || [];
+            this.hostId = $("#host").val();
             this.last_regions = this.last_regions || [];
             drawRegions.call(this, this.regions);
+        }.bind(this));
+
+        $("#filterbox").keyup(function () {
+            var text = $(arguments[0].target).val().toLowerCase();
+            this.filtertext = text;
+            if (text === "") {
+                $(".filterhide").removeClass("filterhide");
+            } else {
+                $(".hostChart .regionTitle").each(function () {
+                    var n = $(this).text();
+                    var i = n.toLowerCase().indexOf(text);
+                    if (i < 0) {
+                        $("#" + n).addClass("filterhide");
+                    } else {
+                        $("#" + n).removeClass("filterhide");
+                    }
+                });
+            }
+        }.bind(this));
+
+        $(".slidecontainer").click(function () {
+            var closing = this.variables.closed.get() === "true";
+            closing = !closing;
+            this.variables.closed.set("" + closing);
+            if (closing) {
+                $(".navbar").collapse("hide");
+                $(".slidecontainer").removeClass("open").addClass("closed");
+                $("#regionContainer").css("margin-top", "6px");
+            } else {
+                $(".navbar").collapse("show");
+                $(".slidecontainer").removeClass("closed").addClass("open");
+                $("#regionContainer").css("margin-top", "93px");
+            }
+
+            return false;
         }.bind(this));
 
         $("input[type='checkbox']").on("switchChange.bootstrapSwitch", function (e, data) {
@@ -120,6 +221,7 @@ var Monitoring = (function () {
 
             var newst = !this.measures_status[type];
             this.measures_status[type] = newst;
+            this.variables[type + "On"].set(newst.toString());
             if (newst) {
                 // $("." + type).removeClass("hide");
                 $("." + type).removeClass("myhide");
@@ -127,12 +229,13 @@ var Monitoring = (function () {
                 // $("." + type).addClass("hide");
                 $("." + type).addClass("myhide");
             }
+
             // $("." + type).toggleClass("hide");
         }.bind(this));
 
         $(".sort").on("click", function (e, data) {
             var rawid = "#" + e.target.id;
-            var id = e.target.id.replace(/sort$/, '');
+            var id = e.target.id.replace(/sort$/, "");
             var rawmode = e.target.classList[3];
             var mode = rawmode.replace(/^fa-/, "");
             var oid = this.options.orderby;
@@ -155,10 +258,13 @@ var Monitoring = (function () {
                     var oldclass = $(orawid).attr("class").split(/\s+/)[3];
                     $(orawid).removeClass(oldclass).addClass("fa-sort");
                 }
+
                 $(rawid).removeClass(rawmode).addClass("fa-sort-desc");
             }
+
             this.options.orderby = id;
             this.options.orderinc = newmode;
+            this.variables.sort.set(id + "//" + newmode);
             sortRegions.call(this);
         }.bind(this));
     }
@@ -170,72 +276,49 @@ var Monitoring = (function () {
         if (inc === "") {
             return;
         }
+
         $(".regionChart").sort(function (a, b) {
-            var dataA = data[a.id],
-                dataB = data[b.id];
-            var itemA = dataA[by],
-                itemB = dataB[by];
+            var dataA = data[a.id];
+            var dataB = data[b.id];
+            if (!dataA || !dataB) {
+                return 0;
+            }
+
+            var itemA = dataA[by];
+            var itemB = dataB[by];
             if (inc === "sort-asc") {
                 // return itemA > itemB;
                 return parseFloat(itemA) - parseFloat(itemB);
             }
+
             return parseFloat(itemB) - parseFloat(itemA);
+
             // return itemB > itemA;
         }).appendTo("#regionContainer");
     }
 
     function calcMinHeight() {
         var minH = 9999;
-        $(".regionChart").forEach(function(v) {
+        $(".regionChart").forEach(function (v) {
             if (v.height() < minH) {
                 minH = v.height();
             }
         });
     }
 
-    // function setPlaceholder (show) {
-
-    //     var placeholder = $("#host-placeholder");
-    //     var body = $("body");
-
-    //     if (show) {
-    //         placeholder.removeClass("hide");
-    //         body.addClass("placeholder-bg");
-    //     }
-    //     else {
-    //         placeholder.addClass("hide");
-    //         body.removeClass("placeholder-bg");
-    //     }
-    // }
-
-    // function getWithAuth(url, callback, callbackerror) {
-    //     callbackerror = callbackerror || function() {};
-    //     if (MashupPlatform.context.get('fiware_token_available')) {
-    //         MashupPlatform.http.makeRequest(url, {
-    //             method: 'GET',
-    //             requestHeaders: {
-    //                 "X-FI-WARE-OAuth-Token": "true",
-    //                 "X-FI-WARE-OAuth-Header-Name": "X-Auth-Token"
-    //             },
-    //             onSuccess: function(response) {
-    //                 var data = JSON.parse(response.responseText);
-    //                 callback(data);
-    //             },
-    //             onError: function(response) {
-    //                 callbackerror(response);
-    //             }
-    //         });
-    //     } else {
-    //         MashupPlatform.widget.log("No fiware token available");
-    //     }
-    // }
-
     function getRegionsMonitoring() {
-        FIDASHRequests.get(url, function(err, data) {
+        FIDASHRequests.get(url, function (err, data) {
             if (err) {
                 window.console.log(err);
+                MashupPlatform.widget.log("The API seems down (Asking for regions): " + err.statusText);
+
+                // The API are down
+                // fillRegionSelector(["Spain2", "Trento", "Berlin2"].sort());
+                // selectSavedRegions.call(this);
+                // this.regions = $("#region_selector").val() || [];
                 return;
             }
+
             var regions = [];
 
             data._embedded.regions.forEach(function (region) {
@@ -243,9 +326,68 @@ var Monitoring = (function () {
             });
 
             fillRegionSelector(regions.sort());
+            selectSavedRegions.call(this);
             this.regions = $("#region_selector").val() || [];
-            // getRawData.call(this);
         }.bind(this));
+    }
+
+    function receiveRegions(regionsRaw) {
+        var regions = JSON.parse(regionsRaw);
+
+        // Check it's a list
+        var newRegions = filterNotRegion(regions);
+
+        // Set in selector
+        $("#region_selector").selectpicker("val", newRegions);
+
+        this.regions = newRegions;
+        this.last_regions = []; // Reset regions! :)
+        // Empty before override
+        $("#regionContainer").empty();
+        drawRegions.call(this, this.regions);
+    }
+
+    function handleSwitchVariable(name) {
+        if (this.variables[name + "On"].get() === "") {
+            this.variables[name + "On"].set("true");
+        } else if (this.variables[name + "On"].get() !== "true") {
+            this.measures_status[name] = false;
+            $("." + name).addClass("myhide");
+            $("#" + name + "Switch input[name='select-charts-region']").bootstrapSwitch("state", false, true);
+        }
+    }
+
+    function selectSavedRegions() {
+        // Get regions
+        var regionsS = this.variables.regionSelected.get();
+        var regions = regionsS.split(",");
+        receiveRegions.call(this, JSON.stringify(regions));
+    }
+
+    function handleVariables() {
+        handleSwitchVariable.call(this, "vcpu");
+        handleSwitchVariable.call(this, "ram");
+        handleSwitchVariable.call(this, "disk");
+        handleSwitchVariable.call(this, "ip");
+
+        if (this.variables.closed.get() === "true") {
+            $(".navbar").collapse("hide");
+            $(".slidecontainer").removeClass("open").addClass("closed");
+            $("#regionContainer").css("margin-top", "6px");
+        } else {
+            $(".navbar").collapse("show");
+            $(".slidecontainer").removeClass("closed").addClass("open");
+            $("#regionContainer").css("margin-top", "93px");
+        }
+
+        var sort = this.variables.sort.get();
+        var matchS = sort.match(/^(.+)\/\/(.+)$/);
+        if (sort && matchS) {
+            $("#" + matchS[1] + "sort").addClass("fa-" + matchS[2]);
+            this.options.orderby = matchS[1];
+            this.options.orderinc = matchS[2];
+            sortRegions.call(this);
+        }
     }
 
     /******************************************************************/
@@ -254,15 +396,17 @@ var Monitoring = (function () {
 
     Monitoring.prototype = {
         init: function () {
-            // Load the Visualization API and the piechart package.
-            google.load("visualization", "1", {packages:["corechart"]});
-            google.setOnLoadCallback(getRegionsMonitoring.bind(this));
+            $(".navbar").collapse();
+            handleVariables.call(this);
 
             setEvents.call(this);
 
+            getRegionsMonitoring.call(this);
+
             // Initialize switchs
             $("[name='select-charts-region']").bootstrapSwitch();
-            $("[name='select-charts-host']").bootstrapSwitch();
+
+            MashupPlatform.wiring.registerCallback("regions", receiveRegions.bind(this));
         }
     };
 
