@@ -11,7 +11,7 @@
         "url": "https://github.com/fidash/widget-resourcesusage",
         "type": "git"
     },
-    "version": "0.10.1",
+    "version": "0.10.2",
     "dependencies": {
         "jquery": "^2.2.1",
         "bootstrap-select": "^1.10.0",
